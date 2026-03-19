@@ -1,0 +1,26 @@
+{
+  "name": "feishu-cli",
+  "version": "0.1.0",
+  "description": "CLI wrapper for Feishu MCP tools, designed for AI consumption",
+  "type": "module",
+  "bin": {
+    "feishu": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "commander": "^13.0.0",
+    "marked": "^17.0.4",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
