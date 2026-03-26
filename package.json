@@ -1,7 +1,7 @@
 {
-  "name": "feishu-cli",
+  "name": "feishu-max-saver-skill",
   "version": "0.1.0",
-  "description": "CLI wrapper for Feishu MCP tools, designed for AI consumption",
+  "description": "Feishu AI Skill — 4% context cost, 90% Feishu coverage, works with any Agent",
   "type": "module",
   "bin": {
     "feishu": "./dist/cli.js"

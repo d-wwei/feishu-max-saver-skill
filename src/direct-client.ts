@@ -4,7 +4,7 @@ import type { FeishuService } from './service.js'
 const BASE_URL = 'https://open.feishu.cn'
 
 interface ToolMapping {
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   path: string
 }
 
@@ -21,6 +21,120 @@ const TOOL_MAP: Record<string, ToolMapping> = {
   drive_v1_file_list: { method: 'GET', path: '/open-apis/drive/v1/files' },
   drive_v1_file_createFolder: { method: 'POST', path: '/open-apis/drive/v1/files/create_folder' },
   drive_v1_file_delete: { method: 'DELETE', path: '/open-apis/drive/v1/files/{file_token}' },
+
+  // IM
+  im_v1_message_create: { method: 'POST', path: '/open-apis/im/v1/messages' },
+  im_v1_message_reply: { method: 'POST', path: '/open-apis/im/v1/messages/{message_id}/reply' },
+  im_v1_message_list: { method: 'GET', path: '/open-apis/im/v1/messages' },
+  im_v1_message_get: { method: 'GET', path: '/open-apis/im/v1/messages/{message_id}' },
+
+  // Bitable
+  bitable_v1_app_table_list: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables' },
+  bitable_v1_app_table_record_list: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records' },
+  bitable_v1_app_table_record_get: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/{record_id}' },
+  bitable_v1_app_table_record_create: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records' },
+  bitable_v1_app_table_record_update: { method: 'PATCH', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/{record_id}' },  // PUT in feishu docs
+  bitable_v1_app_table_record_delete: { method: 'DELETE', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/{record_id}' },
+  bitable_v1_app_table_record_search: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/search' },
+
+  // Chat
+  im_v1_chat_list: { method: 'GET', path: '/open-apis/im/v1/chats' },
+  im_v1_chat_get: { method: 'GET', path: '/open-apis/im/v1/chats/{chat_id}' },
+  im_v1_chat_create: { method: 'POST', path: '/open-apis/im/v1/chats' },
+  im_v1_chat_members: { method: 'GET', path: '/open-apis/im/v1/chats/{chat_id}/members' },
+
+  // Contact
+  contact_v3_user_get: { method: 'GET', path: '/open-apis/contact/v3/users/{user_id}' },
+  contact_v3_user_search: { method: 'POST', path: '/open-apis/contact/v3/users/search' },
+  contact_v3_department_get: { method: 'GET', path: '/open-apis/contact/v3/departments/{department_id}' },
+  contact_v3_department_list: { method: 'GET', path: '/open-apis/contact/v3/departments' },
+
+  // Task
+  task_v2_task_list: { method: 'GET', path: '/open-apis/task/v2/tasks' },
+  task_v2_task_get: { method: 'GET', path: '/open-apis/task/v2/tasks/{task_guid}' },
+  task_v2_task_create: { method: 'POST', path: '/open-apis/task/v2/tasks' },
+  task_v2_task_patch: { method: 'PATCH', path: '/open-apis/task/v2/tasks/{task_guid}' },
+  task_v2_task_delete: { method: 'DELETE', path: '/open-apis/task/v2/tasks/{task_guid}' },
+
+  // Approval
+  approval_v4_instance_list: { method: 'GET', path: '/open-apis/approval/v4/instances' },
+  approval_v4_instance_get: { method: 'GET', path: '/open-apis/approval/v4/instances/{instance_id}' },
+  approval_v4_instance_create: { method: 'POST', path: '/open-apis/approval/v4/instances' },
+
+  // Sheets
+  sheets_v3_spreadsheet_get: { method: 'GET', path: '/open-apis/sheets/v3/spreadsheets/{spreadsheet_token}' },
+  sheets_v3_spreadsheet_sheet_query: { method: 'GET', path: '/open-apis/sheets/v3/spreadsheets/{spreadsheet_token}/sheets/query' },
+  sheets_v2_spreadsheet_values_get: { method: 'GET', path: '/open-apis/sheets/v2/spreadsheets/{spreadsheetToken}/values/{range}' },
+  sheets_v2_spreadsheet_values_update: { method: 'PUT', path: '/open-apis/sheets/v2/spreadsheets/{spreadsheetToken}/values' },
+  sheets_v2_spreadsheet_values_append: { method: 'POST', path: '/open-apis/sheets/v2/spreadsheets/{spreadsheetToken}/values_append' },
+
+  // Comment
+  drive_v1_file_comment_list: { method: 'GET', path: '/open-apis/drive/v1/files/{file_token}/comments' },
+  drive_v1_file_comment_get: { method: 'GET', path: '/open-apis/drive/v1/files/{file_token}/comments/{comment_id}' },
+  drive_v1_file_comment_create: { method: 'POST', path: '/open-apis/drive/v1/files/{file_token}/comments' },
+
+  // Search
+  search_v2_message: { method: 'POST', path: '/open-apis/search/v2/message' },
+  search_v2_app: { method: 'POST', path: '/open-apis/search/v2/app' },
+
+  // Calendar
+  calendar_v4_calendar_list: { method: 'GET', path: '/open-apis/calendar/v4/calendars' },
+  calendar_v4_calendar_event_list: { method: 'GET', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events' },
+  calendar_v4_calendar_event_get: { method: 'GET', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}' },
+  calendar_v4_calendar_event_create: { method: 'POST', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events' },
+  calendar_v4_calendar_event_delete: { method: 'DELETE', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}' },
+
+  // Minutes
+  minutes_v1_minute_get: { method: 'GET', path: '/open-apis/minutes/v1/minutes/{minute_token}' },
+  minutes_v1_minute_statistics: { method: 'GET', path: '/open-apis/minutes/v1/minutes/{minute_token}/statistics' },
+
+  // VC
+  vc_v1_reserve_create: { method: 'POST', path: '/open-apis/vc/v1/reserves' },
+  vc_v1_reserve_get: { method: 'GET', path: '/open-apis/vc/v1/reserves/{reserve_id}' },
+  vc_v1_reserve_delete: { method: 'DELETE', path: '/open-apis/vc/v1/reserves/{reserve_id}' },
+  vc_v1_meeting_get: { method: 'GET', path: '/open-apis/vc/v1/meetings/{meeting_id}' },
+  vc_v1_meeting_listByNo: { method: 'GET', path: '/open-apis/vc/v1/meetings/list_by_no' },
+
+  // Drive Permission
+  drive_v1_permission_member_list: { method: 'GET', path: '/open-apis/drive/v1/permissions/{token}/members' },
+  drive_v1_permission_member_create: { method: 'POST', path: '/open-apis/drive/v1/permissions/{token}/members' },
+  drive_v1_permission_member_update: { method: 'PATCH', path: '/open-apis/drive/v1/permissions/{token}/members/{member_id}' },
+  drive_v1_permission_member_delete: { method: 'DELETE', path: '/open-apis/drive/v1/permissions/{token}/members/{member_id}' },
+
+  // Mail
+  mail_v1_mailgroup_list: { method: 'GET', path: '/open-apis/mail/v1/mailgroups' },
+  mail_v1_mailgroup_get: { method: 'GET', path: '/open-apis/mail/v1/mailgroups/{mailgroup_id}' },
+  mail_v1_mailgroup_member_list: { method: 'GET', path: '/open-apis/mail/v1/mailgroups/{mailgroup_id}/members' },
+  mail_v1_public_mailbox_list: { method: 'GET', path: '/open-apis/mail/v1/public_mailboxes' },
+
+  // Lingo (enterprise glossary)
+  lingo_v1_entity_search: { method: 'POST', path: '/open-apis/lingo/v1/entities/search' },
+  lingo_v1_entity_get: { method: 'GET', path: '/open-apis/lingo/v1/entities/{entity_id}' },
+  lingo_v1_entity_list: { method: 'GET', path: '/open-apis/lingo/v1/entities' },
+  lingo_v1_entity_create: { method: 'POST', path: '/open-apis/lingo/v1/entities' },
+
+  // OKR
+  okr_v1_user_okr_list: { method: 'GET', path: '/open-apis/okr/v1/users/{user_id}/okrs' },
+  okr_v1_okr_get: { method: 'GET', path: '/open-apis/okr/v1/okrs/{okr_id}' },
+  okr_v1_period_list: { method: 'GET', path: '/open-apis/okr/v1/periods' },
+
+  // Report
+  report_v1_rule_query: { method: 'POST', path: '/open-apis/report/v1/rules/query' },
+  report_v1_task_query: { method: 'POST', path: '/open-apis/report/v1/tasks/query' },
+
+  // Tenant
+  tenant_v2_tenant_get: { method: 'GET', path: '/open-apis/tenant/v2/tenant' },
+
+  // Attendance
+  attendance_v1_user_task_query: { method: 'POST', path: '/open-apis/attendance/v1/user_tasks/query' },
+  attendance_v1_user_stats_data_query: { method: 'POST', path: '/open-apis/attendance/v1/user_stats_datas/query' },
+  attendance_v1_shift_list: { method: 'GET', path: '/open-apis/attendance/v1/shifts' },
+  attendance_v1_shift_get: { method: 'GET', path: '/open-apis/attendance/v1/shifts/{shift_id}' },
+
+  // Admin
+  admin_v1_audit_info_list: { method: 'GET', path: '/open-apis/admin/v1/audit_infos' },
+  admin_v1_admin_dept_stat_list: { method: 'GET', path: '/open-apis/admin/v1/admin_dept_stats' },
+  admin_v1_admin_user_stat_list: { method: 'GET', path: '/open-apis/admin/v1/admin_user_stats' },
 }
 
 // Builtin tools that take flat args as body instead of {path, query, body}
@@ -156,6 +270,80 @@ function getToolDescription(name: string): string {
     drive_v1_file_list: 'List files in a folder',
     drive_v1_file_createFolder: 'Create a folder',
     drive_v1_file_delete: 'Delete a file or document',
+    im_v1_message_create: 'Send a message to a chat',
+    im_v1_message_reply: 'Reply to a message',
+    im_v1_message_list: 'List messages in a chat',
+    im_v1_message_get: 'Get a specific message',
+    bitable_v1_app_table_list: 'List tables in a bitable app',
+    bitable_v1_app_table_record_list: 'List records in a table',
+    bitable_v1_app_table_record_get: 'Get a specific record',
+    bitable_v1_app_table_record_create: 'Create a record in a table',
+    bitable_v1_app_table_record_update: 'Update a record in a table',
+    bitable_v1_app_table_record_delete: 'Delete a record from a table',
+    bitable_v1_app_table_record_search: 'Search records in a table',
+    drive_v1_file_comment_list: 'List comments on a document',
+    drive_v1_file_comment_get: 'Get a specific comment',
+    drive_v1_file_comment_create: 'Add a comment to a document',
+    search_v2_message: 'Search messages',
+    search_v2_app: 'Search applications',
+    calendar_v4_calendar_list: 'List calendars',
+    calendar_v4_calendar_event_list: 'List events in a calendar',
+    calendar_v4_calendar_event_get: 'Get a specific event',
+    calendar_v4_calendar_event_create: 'Create a calendar event',
+    calendar_v4_calendar_event_delete: 'Delete a calendar event',
+    im_v1_chat_list: 'List chats the bot is in',
+    im_v1_chat_get: 'Get chat (group) info',
+    im_v1_chat_create: 'Create a new chat (group)',
+    im_v1_chat_members: 'List members of a chat',
+    contact_v3_user_get: 'Get user info',
+    contact_v3_user_search: 'Search users by keyword',
+    contact_v3_department_get: 'Get department info',
+    contact_v3_department_list: 'List sub-departments',
+    task_v2_task_list: 'List tasks',
+    task_v2_task_get: 'Get task details',
+    task_v2_task_create: 'Create a task',
+    task_v2_task_patch: 'Update a task',
+    task_v2_task_delete: 'Delete a task',
+    approval_v4_instance_list: 'List approval instances',
+    approval_v4_instance_get: 'Get approval instance details',
+    approval_v4_instance_create: 'Create an approval instance',
+    sheets_v3_spreadsheet_get: 'Get spreadsheet metadata',
+    sheets_v3_spreadsheet_sheet_query: 'List sheets in a spreadsheet',
+    sheets_v2_spreadsheet_values_get: 'Read cell values from a range',
+    sheets_v2_spreadsheet_values_update: 'Write cell values to a range',
+    sheets_v2_spreadsheet_values_append: 'Append data to a spreadsheet',
+    minutes_v1_minute_get: 'Get minute details',
+    minutes_v1_minute_statistics: 'Get minute statistics',
+    vc_v1_reserve_create: 'Reserve (schedule) a meeting',
+    vc_v1_reserve_get: 'Get reserve details',
+    vc_v1_reserve_delete: 'Cancel a reservation',
+    vc_v1_meeting_get: 'Get meeting details',
+    vc_v1_meeting_listByNo: 'List meetings by meeting number',
+    drive_v1_permission_member_list: 'List document collaborators',
+    drive_v1_permission_member_create: 'Add a document collaborator',
+    drive_v1_permission_member_update: 'Update collaborator permission',
+    drive_v1_permission_member_delete: 'Remove a document collaborator',
+    mail_v1_mailgroup_list: 'List mail groups',
+    mail_v1_mailgroup_get: 'Get mail group details',
+    mail_v1_mailgroup_member_list: 'List mail group members',
+    mail_v1_public_mailbox_list: 'List public mailboxes',
+    lingo_v1_entity_search: 'Search glossary entities',
+    lingo_v1_entity_get: 'Get glossary entity details',
+    lingo_v1_entity_list: 'List all glossary entities',
+    lingo_v1_entity_create: 'Create a glossary entity',
+    okr_v1_user_okr_list: "List user's OKRs",
+    okr_v1_okr_get: 'Get OKR details',
+    okr_v1_period_list: 'List OKR periods',
+    report_v1_rule_query: 'List report rules',
+    report_v1_task_query: 'List report tasks',
+    tenant_v2_tenant_get: 'Get tenant info',
+    attendance_v1_user_task_query: 'Query user attendance records',
+    attendance_v1_user_stats_data_query: 'Query attendance statistics data',
+    attendance_v1_shift_list: 'List available shifts',
+    attendance_v1_shift_get: 'Get shift details',
+    admin_v1_audit_info_list: 'Get audit logs',
+    admin_v1_admin_dept_stat_list: 'Get department statistics',
+    admin_v1_admin_user_stat_list: 'Get user activity statistics',
   }
   return descriptions[name] ?? ''
 }
