@@ -278,3 +278,5 @@ feishu tool call <工具名> '<json>'      # 直接调用任意工具
 - 审批 form: JSON 字符串, 格式参考飞书审批定义
 - IM 发消息默认 `--receive-type chat_id`, 发给个人用 `--receive-type open_id`
 - `--as user` 以用户身份操作, `--as bot` (默认) 以机器人身份
+- 用户认证: `feishu auth login` (OAuth 浏览器授权), `feishu auth status`, `feishu auth logout`
+- Token 过期后自动用 refresh_token 续期，无需人工干预

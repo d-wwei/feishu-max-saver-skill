@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
+import { registerAuthCommand } from './commands/auth.js'
 import { registerConfigCommand } from './commands/config.js'
 import { registerDocCommand } from './commands/doc.js'
 import { registerWikiCommand } from './commands/wiki.js'
@@ -36,8 +37,9 @@ const program = new Command()
   .version('0.2.0')
   .option('--as <identity>', 'Run as user or bot identity', 'bot')
 
-// Config command (no auth needed)
+// Commands that don't need auth
 registerConfigCommand(program)
+registerAuthCommand(program)
 
 // Lazy service initializer
 let _service: FeishuService | null = null

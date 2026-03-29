@@ -9,6 +9,8 @@ export interface FeishuConfig {
   app_secret?: string
   auth_type?: 'tenant' | 'user'
   user_access_token?: string
+  user_refresh_token?: string
+  user_token_expires_at?: number
 }
 
 export type ConfigMode = 'proxy' | 'direct'
@@ -34,6 +36,8 @@ export function readConfig(configPath = DEFAULT_CONFIG_PATH): FeishuConfig | nul
       auth_type: parsed.auth_type ?? 'tenant',
     }
     if (parsed.user_access_token) cfg.user_access_token = parsed.user_access_token
+    if (parsed.user_refresh_token) cfg.user_refresh_token = parsed.user_refresh_token
+    if (parsed.user_token_expires_at) cfg.user_token_expires_at = parsed.user_token_expires_at
     return cfg
   }
   return null

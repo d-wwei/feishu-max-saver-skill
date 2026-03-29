@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import type { FeishuConfig } from './config.js'
+import { writeConfig } from './config.js'
 import type { FeishuService } from './service.js'
 
 const BASE_URL = 'https://open.feishu.cn'
@@ -196,12 +197,64 @@ interface TokenCache {
 export function createDirectService(config: FeishuConfig, identity: 'user' | 'bot' = 'bot'): FeishuService {
   let tokenCache: TokenCache | null = null
 
+  async function refreshUserToken(): Promise<string> {
+    if (!config.user_refresh_token) {
+      throw new Error('No refresh token. Run: feishu auth login')
+    }
+    // Need app access token to refresh user token
+    const appResp = await fetch(`${BASE_URL}/open-apis/auth/v3/app_access_token/internal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ app_id: config.app_id, app_secret: config.app_secret }),
+    })
+    const appData = await appResp.json() as { code: number; msg: string; app_access_token?: string }
+    if (appData.code !== 0 || !appData.app_access_token) {
+      throw new Error(`Failed to get app token for refresh: ${appData.msg}`)
+    }
+
+    const resp = await fetch(`${BASE_URL}/open-apis/authen/v1/oidc/refresh_access_token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${appData.app_access_token}`,
+      },
+      body: JSON.stringify({
+        grant_type: 'refresh_token',
+        refresh_token: config.user_refresh_token,
+      }),
+    })
+    const data = await resp.json() as {
+      code: number; msg: string
+      data?: { access_token: string; refresh_token: string; expires_in: number }
+    }
+    if (data.code !== 0 || !data.data) {
+      throw new Error(`Token refresh failed: ${data.msg} (code: ${data.code}). Run: feishu auth login`)
+    }
+
+    // Update config with new tokens
+    config.user_access_token = data.data.access_token
+    config.user_refresh_token = data.data.refresh_token
+    config.user_token_expires_at = Date.now() + (data.data.expires_in - 300) * 1000
+    writeConfig(config)
+
+    return data.data.access_token
+  }
+
   async function getAccessToken(): Promise<string> {
     if (identity === 'user') {
-      if (!config.user_access_token) {
-        throw new Error('User access token not configured. Add user_access_token to ~/.feishu/config.yml')
+      // Check if we have a valid token
+      if (config.user_access_token && config.user_token_expires_at && Date.now() < config.user_token_expires_at) {
+        return config.user_access_token
       }
-      return config.user_access_token
+      // Try refresh
+      if (config.user_refresh_token) {
+        return refreshUserToken()
+      }
+      // Fallback: static token (legacy manual paste)
+      if (config.user_access_token) {
+        return config.user_access_token
+      }
+      throw new Error('No user token configured. Run: feishu auth login')
     }
 
     if (tokenCache && Date.now() < tokenCache.expiresAt) {

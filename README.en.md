@@ -53,11 +53,10 @@ Approval workflows, OKR, attendance records, report rules, admin console (audit 
 In the interest of transparency:
 
 - **Full email system** — Official supports email CRUD (read/send/draft/reply/labels). We only have mailgroup queries.
-- **Interactive OAuth login** — Official has an interactive OAuth flow. Our `--as user` mode requires manually pasting a token.
 - **Event WebSocket subscriptions** — Official supports real-time event push via long-lived connections. We're a CLI tool, not a persistent service.
 - **Whiteboard rendering** — Official supports Mermaid → Feishu whiteboard. We don't.
 
-~~Task subtasks and reminders~~ — added (create-subtask / list-subtasks / --reminder / add-follower). ~~Document media insertion~~ — added (upload-image / upload-file).
+~~Interactive OAuth login~~ — added (`feishu auth login` with browser OAuth + auto refresh_token renewal). ~~Task subtasks and reminders~~ — added. ~~Document media insertion~~ — added.
 
 Remaining gaps have limited impact on most Agent workflows. But if your use case depends heavily on email, the official CLI may be a better fit.
 
@@ -109,9 +108,12 @@ Once registered, mentioning "Feishu" or "Lark" in any AI session auto-triggers t
 Default: bot identity. Add `--as user` to switch to user identity for personal calendars, tasks, and other user-scoped resources:
 
 ```bash
-feishu calendar list-events <calId> --as user     # User identity
-feishu config set --user-access-token <token>      # Set user token
+feishu auth login                                  # Browser OAuth (one-time setup)
+feishu calendar list-events <calId> --as user      # User identity
+feishu auth status                                 # Check token status
 ```
+
+Token auto-refreshes via refresh_token when expired. No manual intervention needed. Built for Agent automation pipelines.
 
 ## Configuration
 

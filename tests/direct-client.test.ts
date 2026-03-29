@@ -192,7 +192,7 @@ describe('createDirectService', () => {
     it('throws when user identity but no user_access_token', async () => {
       const svc = createDirectService({ app_id: 'test_app', app_secret: 'test_secret' }, 'user')
       await expect(svc.callTool('im_v1_chat_list', { query: {} }))
-        .rejects.toThrow('User access token not configured')
+        .rejects.toThrow('No user token configured')
     })
   })
 
