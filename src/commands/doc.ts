@@ -1,4 +1,5 @@
 import { createInterface } from 'node:readline'
+import fs from 'node:fs'
 import { Command } from 'commander'
 import { outputSuccess, outputError } from '../output.js'
 import type { FeishuService } from '../service.js'
@@ -169,6 +170,68 @@ export function registerDocCommand(program: Command, getService: () => Promise<F
         outputSuccess(result)
       } catch (err) {
         outputError(err instanceof Error ? err.message : String(err), 'DOC_WRITE_ERROR')
+        process.exit(1)
+      }
+    })
+
+  doc
+    .command('upload-image')
+    .description('Upload an image for use in documents (returns file_token)')
+    .argument('<filePath>', 'Local image file path')
+    .requiredOption('--parent <token>', 'Parent document token')
+    .option('--parent-type <type>', 'Parent type', 'doc_image')
+    .action(async (filePath: string, opts) => {
+      try {
+        if (!fs.existsSync(filePath)) {
+          outputError(`File not found: ${filePath}`, 'DOC_UPLOAD_FILE_NOT_FOUND')
+          process.exit(1)
+        }
+        const stat = fs.statSync(filePath)
+        const svc = await getService()
+        const result = await svc.uploadFile(
+          '/open-apis/drive/v1/medias/upload_all',
+          {
+            file_name: filePath.split('/').pop() || 'image.png',
+            parent_type: opts.parentType,
+            parent_node: opts.parent,
+            size: String(stat.size),
+          },
+          filePath,
+        )
+        outputSuccess(result)
+      } catch (err) {
+        outputError(err instanceof Error ? err.message : String(err), 'DOC_UPLOAD_IMAGE_ERROR')
+        process.exit(1)
+      }
+    })
+
+  doc
+    .command('upload-file')
+    .description('Upload a file to Feishu Drive (returns file_token)')
+    .argument('<filePath>', 'Local file path')
+    .requiredOption('--parent <token>', 'Parent folder token')
+    .option('--parent-type <type>', 'Parent type', 'explorer')
+    .action(async (filePath: string, opts) => {
+      try {
+        if (!fs.existsSync(filePath)) {
+          outputError(`File not found: ${filePath}`, 'DOC_UPLOAD_FILE_NOT_FOUND')
+          process.exit(1)
+        }
+        const stat = fs.statSync(filePath)
+        const svc = await getService()
+        const result = await svc.uploadFile(
+          '/open-apis/drive/v1/files/upload_all',
+          {
+            file_name: filePath.split('/').pop() || 'file',
+            parent_type: opts.parentType,
+            parent_node: opts.parent,
+            size: String(stat.size),
+          },
+          filePath,
+        )
+        outputSuccess(result)
+      } catch (err) {
+        outputError(err instanceof Error ? err.message : String(err), 'DOC_UPLOAD_FILE_ERROR')
         process.exit(1)
       }
     })

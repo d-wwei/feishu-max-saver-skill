@@ -6,6 +6,7 @@ import { createDirectService } from './direct-client.js'
 
 export interface FeishuService {
   callTool(name: string, args: Record<string, unknown>): Promise<unknown>
+  uploadFile(endpoint: string, fields: Record<string, string>, filePath: string): Promise<unknown>
   listTools(): Promise<Array<{ name: string; description?: string }>>
   close(): Promise<void>
 }
@@ -44,6 +45,10 @@ async function createProxyService(url: string): Promise<FeishuService> {
       } catch {
         return text
       }
+    },
+
+    async uploadFile(): Promise<unknown> {
+      throw new Error('File upload is not supported in proxy mode. Use direct mode.')
     },
 
     async listTools() {

@@ -11,6 +11,15 @@ feishu doc info <docId>                 # 元信息
 feishu doc create --title <标题>        # 可加 --folder <token>
 feishu doc delete <docId>               # 加 -y 跳过确认
 feishu doc write <docId> --content <md>  # 写入 markdown，可加 --index <n>
+feishu doc upload-image <filePath> --parent <docToken>   # 上传图片，返回 file_token
+feishu doc upload-file <filePath> --parent <folderToken>  # 上传文件到云盘，返回 file_token
+```
+
+上传后用 `feishu block create` 插入图片 block：
+```
+feishu doc upload-image ./pic.png --parent <docToken>
+# → {"data": {"file_token": "boxcnXXX"}}
+feishu block create <docId> <parentBlockId> --body '{"block_type":27,"image":{"token":"boxcnXXX"}}'
 ```
 
 ## Block

@@ -24,7 +24,7 @@ description: >
 ## 常用速查
 
 ```
-feishu doc search/read/create/write/delete <args>
+feishu doc search/read/create/write/delete/upload-image/upload-file <args>
 feishu im send/reply/forward/delete/pin/urgent <args>
 feishu bitable search-records/create-record/batch-create <args>
 feishu calendar list-events/create-event/freebusy <args>

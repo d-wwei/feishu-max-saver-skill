@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import type { FeishuConfig } from './config.js'
 import type { FeishuService } from './service.js'
 
@@ -290,6 +292,37 @@ export function createDirectService(config: FeishuConfig, identity: 'user' | 'bo
 
       const url = buildUrl(mapping.path, pathParams, queryParams)
       return callApi(mapping.method, url, body)
+    },
+
+    async uploadFile(endpoint: string, fields: Record<string, string>, filePath: string) {
+      const token = await getAccessToken()
+      const fileBuffer = fs.readFileSync(filePath)
+      const fileName = fields.file_name || path.basename(filePath)
+
+      const formData = new FormData()
+      for (const [key, value] of Object.entries(fields)) {
+        formData.append(key, value)
+      }
+      formData.append('file', new Blob([fileBuffer]), fileName)
+
+      const url = BASE_URL + endpoint
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData,
+      })
+
+      const text = await resp.text()
+      let data: { code?: number; msg?: string; data?: unknown }
+      try {
+        data = JSON.parse(text)
+      } catch {
+        throw new Error(`Upload API returned non-JSON (HTTP ${resp.status}): ${text.slice(0, 200)}`)
+      }
+      if (data.code && data.code !== 0) {
+        throw new Error(`Upload error: ${data.msg} (code: ${data.code})`)
+      }
+      return data.data ?? data
     },
 
     async listTools() {
