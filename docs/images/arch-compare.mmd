@@ -1,0 +1,31 @@
+graph LR
+    subgraph MCP["🔴 官方 MCP"]
+        direction TB
+        M1["启动时注入<br/>1350 个 Schema"]
+        M2["常驻上下文<br/>~15,000 tokens"]
+        M3["仅 MCP 客户端"]
+        M1 --> M2 --> M3
+    end
+
+    subgraph CLI["🔴 官方 CLI"]
+        direction TB
+        C1["启动时加载<br/>19 个 Skill 文件"]
+        C2["常驻上下文<br/>~15,000 tokens"]
+        C3["仅 npx skills"]
+        C1 --> C2 --> C3
+    end
+
+    subgraph SKL["🟢 Max Saver Skill"]
+        direction TB
+        S1["提到飞书才加载<br/>SKILL.md 概览"]
+        S2["日常只占<br/>~655 tokens"]
+        S3["按需读取<br/>commands.md"]
+        S4["任何 Agent"]
+        S1 --> S2
+        S2 -.-> S3
+        S2 --> S4
+    end
+
+    style MCP fill:#fff0f0,stroke:#e74c3c
+    style CLI fill:#fff0f0,stroke:#e74c3c
+    style SKL fill:#f0fff0,stroke:#27ae60

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+body { margin: 0; padding: 40px; background: #fff; font-family: -apple-system, "PingFang SC", sans-serif; }
+.container { display: flex; gap: 24px; justify-content: center; max-width: 860px; margin: 0 auto; }
+.card { flex: 1; border-radius: 12px; padding: 24px; text-align: center; }
+.card-red { background: #fef2f2; border: 2px solid #ef4444; }
+.card-green { background: #f0fdf4; border: 2px solid #22c55e; }
+.icon { font-size: 36px; margin-bottom: 8px; }
+.name { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1a1a1a; }
+.metric { font-size: 28px; font-weight: 800; margin: 8px 0; }
+.metric-red { color: #ef4444; }
+.metric-green { color: #22c55e; }
+.desc { font-size: 13px; color: #666; line-height: 1.6; }
+.tag { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 12px; margin-top: 12px; }
+.tag-red { background: #fecaca; color: #991b1b; }
+.tag-green { background: #bbf7d0; color: #166534; }
+.vs { display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #999; padding: 0 4px; }
+</style></head>
+<body>
+<div class="container">
+  <div class="card card-red">
+    <div class="icon">📦</div>
+    <div class="name">官方 MCP</div>
+    <div class="metric metric-red">~15,000 tokens</div>
+    <div class="desc">1350 个 Schema<br/>启动全量注入<br/>常驻不释放</div>
+    <div class="tag tag-red">仅 MCP 客户端</div>
+  </div>
+  <div class="vs">VS</div>
+  <div class="card card-red">
+    <div class="icon">📋</div>
+    <div class="name">官方 CLI</div>
+    <div class="metric metric-red">~15,000 tokens</div>
+    <div class="desc">19 个 Skill 文件<br/>启动全量加载<br/>常驻不释放</div>
+    <div class="tag tag-red">仅 npx skills</div>
+  </div>
+  <div class="vs">VS</div>
+  <div class="card card-green">
+    <div class="icon">🪶</div>
+    <div class="name">Max Saver Skill</div>
+    <div class="metric metric-green">~655 tokens</div>
+    <div class="desc">两层按需加载<br/>提到飞书才激活<br/>用完就走</div>
+    <div class="tag tag-green">任何 Agent</div>
+  </div>
+</div>
+</body></html>

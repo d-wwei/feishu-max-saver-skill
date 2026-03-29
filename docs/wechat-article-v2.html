@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飞书出了官方 CLI，但我还是更爱自己的 Skill——怒省 96% 上下文</title>
+<style>body{background:#f5f5f5;margin:0;padding:20px 0;}</style>
+</head>
+<body>
+<section id="nice" style="max-width:800px;margin:0 auto;background:#fff;padding:24px 20px;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.75;letter-spacing:0.02em;color:#1f2937;word-wrap:break-word;overflow-wrap:break-word;">
+
+<section style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:6px;padding:14px 18px;margin-bottom:24px;">
+<section style="margin:0;font-size:15px;line-height:1.75;color:#1f2937;"><strong style="color:#111827;">一句话版：</strong>146 个飞书 API，655 tokens 上下文，不绑任何 Agent 框架。官方列出的 6 个能力差距，全部补齐。</section>
+</section>
+
+<section style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;padding:0;transform:scale(1,0.5);"></section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">15,000 tokens。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">这是你的 Agent 接入飞书后，还没干活就先烧掉的上下文预算。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">飞书官方 MCP 有 1350 个工具定义。每个都是一份 JSON Schema，连接时全量注入上下文。你的 Agent 打开飞书这把"瑞士军刀"，刀还没拔出来，口袋已经空了一大半。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">15,000 tokens 什么概念？系统提示、用户历史、其他工具、代码片段一叠加，留给飞书的可能就几万 token。这不是理论数字——它直接挤压 Agent 处理复杂任务的空间。上下文窗口再大，也经不住这么烧。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">上周飞书开放平台发了官方 CLI<sup style="color:#0891b2;font-size:12px;font-family:Menlo,Monaco,Consolas,monospace;">[1]</sup>，3 天 1657 Star。我认真研究了一圈：200+ 命令，三层架构，19 个 Skill 文件，2500+ 原始 API。做得确实扎实。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">然后我算了笔账。</section>
+
+<h2 style="font-size:22px;font-weight:bold;color:#111827;border-left:4px solid #0891b2;padding-left:14px;margin:32px 0 16px 0;line-height:1.4;">一笔让人坐不住的 Token 账</h2>
+
+<section style="overflow-x:auto;margin-bottom:24px;">
+<table style="width:100%;border-collapse:collapse;font-size:13px;line-height:1.6;">
+<thead>
+<tr>
+<th style="background:#f3f4f6;border:1px solid #e5e7eb;padding:8px 12px;text-align:left;font-weight:600;color:#111827;">方案</th>
+<th style="background:#f3f4f6;border:1px solid #e5e7eb;padding:8px 12px;text-align:left;font-weight:600;color:#111827;">上下文成本</th>
+<th style="background:#f3f4f6;border:1px solid #e5e7eb;padding:8px 12px;text-align:left;font-weight:600;color:#111827;">能用的 Agent</th>
+<th style="background:#f3f4f6;border:1px solid #e5e7eb;padding:8px 12px;text-align:left;font-weight:600;color:#111827;">加载方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">飞书官方 MCP（1350+ 工具）</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">&#x1F534; ~15,000+ tokens</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">仅 MCP 客户端</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">启动全量加载</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">飞书官方 CLI（19 个 Skill 文件）</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">&#x1F534; ~15,000+ tokens</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">仅 npx skills 框架</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">启动全量加载</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;"><strong style="color:#111827;">Feishu Max Saver Skill</strong></td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#111827;"><strong style="color:#111827;">&#x1F7E2; ~655 tokens</strong></td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;"><strong style="color:#111827;">任何 Agent</strong></td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;"><strong style="color:#111827;">按需触发</strong></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">655 vs 15,000。省 96%。146 个 API 端点，上下文成本差了 23 倍。</section>
+
+<section style="text-align:center;margin:24px 0;">
+<img src="images/arch-compare-html-20260329.png" alt="三方对比：官方 MCP ~15,000 tokens vs 官方 CLI ~15,000 tokens vs Max Saver Skill ~655 tokens" style="max-width:100%;border-radius:6px;border:1px solid #e5e7eb;" />
+<section style="color:#6b7280;font-size:12px;margin-top:6px;line-height:1.5;">三方对比：官方 MCP ~15,000 tokens vs 官方 CLI ~15,000 tokens vs Max Saver Skill ~655 tokens</section>
+</section>
+
+<h2 style="font-size:22px;font-weight:bold;color:#111827;border-left:4px solid #0891b2;padding-left:14px;margin:32px 0 16px 0;line-height:1.4;">三刀砍到 655</h2>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;"><strong style="color:#111827;">第一刀：两层加载。</strong></section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">不一次灌完。SKILL.md 只放能力概览和常用命令模式，大约 655 tokens，日常常驻。100+ 条完整命令参考单独放在 <code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">references/commands.md</code>，Agent 需要具体参数时才读。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">大多数场景只用第一层。Agent 看到 <code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">feishu doc search</code> 就知道怎么搜文档，不需要先把全部命令参数背一遍。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;"><strong style="color:#111827;">第二刀：CLI 替代 MCP。</strong></section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">MCP 的机制是连接时把所有工具 Schema 注入上下文。1350 个工具 = 1350 份 Schema。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">我的方案里 Agent 直接执行 <code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">feishu &lt;命令&gt;</code>。没有 Schema 预加载，没有工具列表注入。打个比方：MCP 是背着 1350 件套工具箱出门，CLI 是揣一本口袋手册。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;"><strong style="color:#111827;">第三刀：Skill 按需触发。</strong></section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">Skill 和 MCP Server 最大的区别——Skill 是对话里提到"飞书"才激活，MCP Server 是启动就常驻。你的 Agent 装了 20 个工具，这次对话只聊日历排期，剩下 19 个工具的上下文全浪费了。Skill 模式下，不提飞书就不占位。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">三刀下去：655 tokens。</section>
+
+<h2 style="font-size:22px;font-weight:bold;color:#111827;border-left:4px solid #0891b2;padding-left:14px;margin:32px 0 16px 0;line-height:1.4;">差距？补完了</h2>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">做这个项目的第一版时，我诚实列出了跟官方 CLI 的 6 个能力差距。然后花了一轮迭代，全部补齐：</section>
+
+<section style="overflow-x:auto;margin-bottom:24px;">
+<table style="width:100%;border-collapse:collapse;font-size:13px;line-height:1.6;">
+<thead>
+<tr>
+<th style="background:#f3f4f6;border:1px solid #e5e7eb;padding:8px 12px;text-align:left;font-weight:600;color:#111827;">差距</th>
+<th style="background:#f3f4f6;border:1px solid #e5e7eb;padding:8px 12px;text-align:left;font-weight:600;color:#111827;">怎么补的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">邮件收发</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">加了 10 个邮件命令（send/list/draft/folder），<code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">--as user</code> 用户身份</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">WebSocket 事件订阅</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;"><code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">feishu event subscribe</code>——长连接 NDJSON 事件流，自动重连</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">白板图表渲染</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">Mermaid &#x2192; PNG &#x2192; upload-image &#x2192; block create，按需装 mermaid-cli</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">OAuth 登录</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;"><code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">feishu auth login</code> 浏览器授权 + refresh_token 自动续期，Agent 无感知</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">子任务和提醒</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">create-subtask / list-subtasks / --reminder / add-follower</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">文档插入图片</td>
+<td style="border:1px solid #e5e7eb;padding:8px 12px;color:#1f2937;">upload-image / upload-file，multipart 上传拿 file_token</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">6 个差距，0 个剩余。</section>
+
+<section style="text-align:center;margin:24px 0;">
+<img src="images/gap-zero-html-20260329.png" alt="6 个差距全部清零" style="max-width:100%;border-radius:6px;border:1px solid #e5e7eb;" />
+<section style="color:#6b7280;font-size:12px;margin-top:6px;line-height:1.5;">6 个差距全部清零</section>
+</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">而官方 CLI 那边，5 个企业管理领域<strong style="color:#111827;">至今还是空白</strong>：审批流程、OKR、考勤记录、汇报规则、管理后台。这些在他们的 GitHub Issues 里排着队。</section>
+
+<h2 style="font-size:22px;font-weight:bold;color:#111827;border-left:4px solid #0891b2;padding-left:14px;margin:32px 0 16px 0;line-height:1.4;">146 个端点干什么</h2>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">不按技术分类，按你周一早上打开飞书的场景来说：</section>
+
+<section style="margin-bottom:16px;font-size:15px;line-height:1.75;color:#1f2937;">&#x1F504; <strong style="color:#111827;">搞定日常</strong> — 搜文档、写文档、插图片、更新多维表格（批量操作/字段/视图）、发审批、查任务和子任务。写 Markdown 自动转飞书 Block。</section>
+
+<section style="margin-bottom:16px;font-size:15px;line-height:1.75;color:#1f2937;">&#x1F4AC; <strong style="color:#111827;">管好沟通</strong> — 发消息、回复、转发、撤回、已读回执、表情回应、消息置顶、合并转发、加急（app/短信/电话三档）。建群、改群、拉人踢人、设公告、搜群。</section>
+
+<section style="margin-bottom:16px;font-size:15px;line-height:1.75;color:#1f2937;">&#x1F4C5; <strong style="color:#111827;">排好日程</strong> — 查日历、建事件、查谁有空（freebusy）、加参会者、RSVP 回复、展开重复事件、约视频会议、拉妙记转写。</section>
+
+<section style="margin-bottom:16px;font-size:15px;line-height:1.75;color:#1f2937;">&#x1F4E7; <strong style="color:#111827;">处理邮件</strong> — 收件箱、邮件详情、发送、草稿管理、文件夹。用户身份操作。</section>
+
+<section style="margin-bottom:16px;font-size:15px;line-height:1.75;color:#1f2937;">&#x1F4CA; <strong style="color:#111827;">看板管理</strong> — OKR、考勤打卡、汇报规则、审计日志、部门统计。这五块官方还没做。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">&#x1F514; <strong style="color:#111827;">实时响应</strong> — <code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">feishu event subscribe</code>，后台跑着，有事件就读 stdout。审批状态变了、有人 @机器人了、文档被编辑了——实时知道。</section>
+
+<h2 style="font-size:22px;font-weight:bold;color:#111827;border-left:4px solid #0891b2;padding-left:14px;margin:32px 0 16px 0;line-height:1.4;">不挑 Agent</h2>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">官方飞书 MCP 绑 MCP 协议。官方 CLI 绑 npx skills。换个 Agent 就得换工具。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">这个 Skill 不绑任何东西。Claude Code、Gemini CLI、Codex、Cursor、自研 Agent，甚至一个 bash 脚本都行。把 <code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">skill/</code> 目录 symlink 到你的 Agent 的 Skill 路径，或者直接把 SKILL.md 喂进系统提示。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">还有个踩坑后加的规则：Agent 通过飞书 IM 桥接和你对话时，它不会再调 <code style="background:#f0fdfa;color:#0891b2;padding:2px 6px;border-radius:4px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:0.85em;">im send</code> 发一遍消息（那样你会收到两条），而是直接在对话流里回复。这种边界感是真用过才会加的。</section>
+
+<h2 style="font-size:22px;font-weight:bold;color:#111827;border-left:4px solid #0891b2;padding-left:14px;margin:32px 0 16px 0;line-height:1.4;">5 步上手</h2>
+
+<section style="margin-bottom:24px;">
+<section style="background:#282c34;border-radius:8px;overflow:hidden;">
+<section style="padding:8px 14px;display:flex;align-items:center;">
+<section style="width:12px;height:12px;border-radius:50%;background:#ff5f56;display:inline-block;margin-right:8px;"></section>
+<section style="width:12px;height:12px;border-radius:50%;background:#ffbd2e;display:inline-block;margin-right:8px;"></section>
+<section style="width:12px;height:12px;border-radius:50%;background:#27c93f;display:inline-block;"></section>
+</section>
+<section style="padding:4px 18px 18px 18px;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:13px;line-height:1.7;color:#abb2bf;overflow-x:auto;white-space:pre-wrap;word-wrap:break-word;"><span style="color:#e06c75;">git</span> clone https://github.com/d-wwei/feishu-max-saver-skill.git
+<span style="color:#e06c75;">cd</span> feishu-max-saver-skill
+<span style="color:#e06c75;">npm</span> install && <span style="color:#e06c75;">npm</span> run build && <span style="color:#e06c75;">npm</span> link
+
+<span style="color:#e06c75;">feishu</span> config set --app-id <span style="color:#98c379;">&lt;你的 app_id&gt;</span> --app-secret <span style="color:#98c379;">&lt;你的 app_secret&gt;</span>
+<span style="color:#e06c75;">feishu</span> auth login    <span style="color:#5c6370;"># 可选：OAuth 授权用户身份</span>
+
+<span style="color:#5c6370;"># 注册为 Skill</span>
+<span style="color:#e06c75;">ln</span> -sf <span style="color:#98c379;">"$(pwd)/skill"</span> ~/.claude/skills/feishu   <span style="color:#5c6370;"># Claude Code</span>
+<span style="color:#e06c75;">ln</span> -sf <span style="color:#98c379;">"$(pwd)/skill"</span> ~/.gemini/skills/feishu   <span style="color:#5c6370;"># Gemini CLI</span>
+<span style="color:#5c6370;"># 其他 Agent：symlink 或直接喂 SKILL.md</span></section>
+</section>
+</section>
+
+<h2 style="font-size:22px;font-weight:bold;color:#111827;border-left:4px solid #0891b2;padding-left:14px;margin:32px 0 16px 0;line-height:1.4;">最后</h2>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">655 tokens。146 个 API。6 个差距清零。5 个官方空白。不绑框架。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">你的 Agent 的上下文窗口是有限的。每多占一个 token，就少一分思考的余裕。</section>
+
+<section style="margin-bottom:20px;font-size:15px;line-height:1.75;color:#1f2937;">仓库全开源：https://github.com/d-wwei/feishu-max-saver-skill</section>
+
+<section style="border:none;border-top:1px solid #e5e7eb;margin:32px 0 16px 0;padding:0;transform:scale(1,0.5);"></section>
+
+<section style="font-size:12px;color:#0891b2;font-family:Menlo,Monaco,Consolas,'Courier New',monospace;line-height:1.8;">
+<section>[1] github.com/larksuite/cli</section>
+</section>
+
+</section>
+</body>
+</html>
