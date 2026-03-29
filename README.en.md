@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">Feishu Max Saver Skill</h1>
-  <p align="center">125 Feishu APIs. 655 tokens of context. Works with any Agent.</p>
+  <p align="center">134 Feishu APIs. 655 tokens of context. Works with any Agent.</p>
   <p align="center">
     <a href="#quick-start">Quick Start</a> · <a href="#why-not-the-official-options">Why Not Official</a> · <a href="./README.md">中文</a>
   </p>
@@ -12,7 +12,7 @@
 
 "Max Saver" is literal: **maximum context savings for AI Agents**.
 
-Connecting an AI Agent to Feishu/Lark typically costs 15,000+ tokens of context window — burned on loading tool definitions before any real work begins. This project brings that number down to **655 tokens**. Same 125 API endpoints, same 29 capability categories, **4% of the context cost**.
+Connecting an AI Agent to Feishu/Lark typically costs 15,000+ tokens of context window — burned on loading tool definitions before any real work begins. This project brings that number down to **655 tokens**. Same 134 API endpoints, same 29 capability categories, **4% of the context cost**.
 
 ```bash
 feishu doc search "Q2 report"                    # Search docs
@@ -52,14 +52,14 @@ Approval workflows, OKR, attendance records, report rules, admin console (audit 
 
 In the interest of transparency:
 
-- **Full email system** — Official supports complete email CRUD (read/send/draft/reply/labels). We only have mailgroup queries.
-- **Task subtasks and reminders** — Official supports subtasks, reminders, followers. We have basic task CRUD only.
-- **Document media insertion** — Official can insert images/files into docs. Our `doc write` accepts Markdown text only.
+- **Full email system** — Official supports email CRUD (read/send/draft/reply/labels). We only have mailgroup queries.
 - **Interactive OAuth login** — Official has an interactive OAuth flow. Our `--as user` mode requires manually pasting a token.
 - **Event WebSocket subscriptions** — Official supports real-time event push via long-lived connections. We're a CLI tool, not a persistent service.
 - **Whiteboard rendering** — Official supports Mermaid → Feishu whiteboard. We don't.
 
-These gaps have limited impact on most Agent workflows (email and WebSocket are the two most likely needs). But if your use case depends heavily on any of the above, the official CLI may be a better fit.
+~~Task subtasks and reminders~~ — added (create-subtask / list-subtasks / --reminder / add-follower). ~~Document media insertion~~ — added (upload-image / upload-file).
+
+Remaining gaps have limited impact on most Agent workflows. But if your use case depends heavily on email, the official CLI may be a better fit.
 
 ## 29 Capability Categories
 
@@ -73,7 +73,7 @@ These gaps have limited impact on most Agent workflows (email and WebSocket are 
 
 **Enterprise Management** — task, approval, okr, attendance, report, contact, mail, lingo, tenant, admin
 
-**Escape hatch** — `feishu tool call <api_name> '<json>'` calls any of the 125 mapped endpoints directly
+**Escape hatch** — `feishu tool call <api_name> '<json>'` calls any of the 134 mapped endpoints directly
 
 ## Quick Start
 
