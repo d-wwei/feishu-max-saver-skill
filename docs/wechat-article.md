@@ -22,7 +22,7 @@
 | 飞书官方 CLI（19 个 Skill 文件） | 🔴 ~15,000+ tokens | 仅 npx skills 框架 | 启动全量加载 |
 | **Feishu Max Saver Skill** | 🟢 **~655 tokens** | **任何 Agent** | **按需触发** |
 
-655 vs 15,000。省 96%。同样覆盖 125 个 API 端点，上下文成本差了 23 倍。
+655 vs 15,000。省 96%。同样覆盖 134 个 API 端点，上下文成本差了 23 倍。
 
 这不是玄学。三个设计决策叠出来的。
 
@@ -50,18 +50,18 @@ Skill 和 MCP Server 最大的区别——Skill 是对话里提到"飞书"才激
 
 ## 该诚实的地方
 
-官方 CLI 有几个能力我确实做不到：
+官方 CLI 有几个能力我还没覆盖：
 
 - **完整邮件系统**（收/发/草稿/回复/标签）——我只有邮件组查询
-- **任务子任务和提醒**——我只有基础 CRUD
-- **文档里插图片和文件**——我的 doc write 只吃 Markdown
 - **交互式 OAuth 登录**——我需要手动粘贴 token
 - **WebSocket 实时事件订阅**——我是 CLI，不是常驻服务
 - **白板图表渲染**——我不做
 
-但反过来，5 个企业管理领域是**我有、官方没有的**：审批流程、OKR、考勤记录、汇报规则、管理后台（审计日志/统计）。这些在官方 CLI 的 GitHub Issues 里还在排队。
+~~任务子任务和提醒~~ 已经补上了（create-subtask / list-subtasks / --reminder / add-follower）。~~文档插入图片和文件~~ 也补了（upload-image / upload-file）。
 
-选哪个取决于你的场景。重度依赖邮件和 WebSocket？官方更合适。做文档读写、消息收发、表格操作、日历管理这些高频操作？655 tokens 的方案性价比高得多。
+反过来，5 个企业管理领域是**我有、官方没有的**：审批流程、OKR、考勤记录、汇报规则、管理后台（审计日志/统计）。这些在官方 CLI 的 GitHub Issues 里还在排队。
+
+选哪个取决于你的场景。重度依赖邮件收发？官方更合适。做文档读写、消息收发、表格操作、日历管理这些高频操作？655 tokens 的方案性价比高得多。
 
 ## 29 类能力，按场景看
 
@@ -75,15 +75,15 @@ Skill 和 MCP Server 最大的区别——Skill 是对话里提到"飞书"才激
 
 支持 `--as user` 切换用户身份，访问个人日历和任务。还有两个内置 Workflow 模板：会议纪要汇总和站会日报。
 
-不够用？`feishu tool call <API名> '<json>'` 直接调用 125 个端点中的任何一个。
+不够用？`feishu tool call <API名> '<json>'` 直接调用 134 个端点中的任何一个。
 
-## 不挑 Agent
+## 不挑 Agent，不绑框架
 
-能跑 shell 的 Agent 都能用。不绑定 MCP，不绑定 npx skills，不绑定任何特定框架。
+这个 Skill 不是给某个特定 Agent 做的。能跑 shell 的 Agent 都能用。
 
-Claude Code、Gemini CLI、Codex、自研 Agent——注册为 Skill 后，对话里提到"飞书"自动触发。
+官方飞书 MCP 绑定 MCP 协议，官方 CLI 绑定 npx skills 框架。换个 Agent 就得换工具。我们不绑任何框架——Claude Code、Gemini CLI、Codex、Cursor、自研 Agent，甚至一个能执行 bash 的脚本都行。把 `skill/` 目录注册到你的 Agent 的 Skill 加载路径，或者直接把 SKILL.md 喂进系统提示。
 
-还有一个细节：当 Agent 通过飞书 IM 桥接和你对话时，它不会傻傻地再调 `im send` 发一遍消息，而是直接在对话流里回复。只有主动通知第三方时才走 API。这种边界感是踩了坑之后才会加的规则。
+还有一个踩坑后加的规则：当 Agent 通过飞书 IM 桥接和你对话时，它不会傻傻地再调 `im send` 发一遍消息，而是直接在对话流里回复。只有主动通知第三方时才走 API。
 
 ## 3 分钟上手
 
@@ -105,7 +105,7 @@ ln -sf "$(pwd)/skill" ~/.gemini/skills/feishu   # Gemini CLI
 
 ## 最后
 
-655 tokens。125 个 API。29 类能力。5 个官方还没做的领域。
+655 tokens。134 个 API。29 类能力。5 个官方还没做的领域。
 
 官方 CLI 做得不错，解决的是"全量覆盖"的问题。我要解决的是"Agent 上下文寸土寸金"的问题。两个问题，两个答案。
 
