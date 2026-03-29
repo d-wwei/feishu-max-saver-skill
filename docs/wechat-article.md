@@ -1,6 +1,6 @@
 # 飞书官方出了 CLI，1657 Star——我研究了一圈，还是没换
 
-**一句话版：** 官方 CLI 有 200+ 命令和 2500 个 API，但我的方案只要 655 tokens 上下文就能干 90% 的活。
+**一句话版：** 官方 CLI 有 200+ 命令和 2500 个 API，但我的方案只要 655 tokens 上下文就能干同样的活。
 
 ---
 
@@ -22,7 +22,7 @@
 | 飞书官方 CLI（19 个 Skill 文件） | 🔴 ~15,000+ tokens | 仅 npx skills 框架 | 启动全量加载 |
 | **Feishu Max Saver Skill** | 🟢 **~655 tokens** | **任何 Agent** | **按需触发** |
 
-655 vs 15,000。省 96%。同样覆盖 134 个 API 端点，上下文成本差了 23 倍。
+655 vs 15,000。省 96%。覆盖 146 个 API 端点，上下文成本差了 23 倍。
 
 这不是玄学。三个设计决策叠出来的。
 
@@ -30,7 +30,7 @@
 
 **第一刀：两层加载，不一次灌完。**
 
-SKILL.md 只放能力概览和常用命令模式，大约 655 tokens，日常常驻。完整的 80+ 条命令参考单独放在 `references/commands.md`（约 3,600 tokens），Agent 需要具体参数时才读取。
+SKILL.md 只放能力概览和常用命令模式，大约 655 tokens，日常常驻。完整的 100+ 条命令参考单独放在 `references/commands.md`（约 3,600 tokens），Agent 需要具体参数时才读取。
 
 大多数场景只用第一层。Agent 看到 `feishu doc search` 就知道怎么搜文档，不需要先把 18 个多维表格命令的完整参数背一遍。
 
@@ -48,34 +48,36 @@ Skill 和 MCP Server 最大的区别——Skill 是对话里提到"飞书"才激
 
 三刀下去：655 tokens。
 
-## 该诚实的地方
+## 功能差距？已经清零了
 
-官方 CLI 有几个能力我还没覆盖：
+做完这轮迭代，之前跟官方 CLI 对比时列出的 6 个差距全部补齐：
 
-- **完整邮件系统**（收/发/草稿/回复/标签）——我只有邮件组查询
-- **交互式 OAuth 登录**——我需要手动粘贴 token
-- **WebSocket 实时事件订阅**——我是 CLI，不是常驻服务
-- **白板图表渲染**——我不做
-
-~~任务子任务和提醒~~ 已经补上了（create-subtask / list-subtasks / --reminder / add-follower）。~~文档插入图片和文件~~ 也补了（upload-image / upload-file）。
+- ~~完整邮件系统~~ — 已补（send/list/draft/folder，10 个邮件命令）
+- ~~Event WebSocket 订阅~~ — 已补（`feishu event subscribe`，NDJSON 事件流，自动重连）
+- ~~白板图表渲染~~ — 已补（Mermaid → PNG → upload-image → block create，按需安装 mermaid-cli）
+- ~~交互式 OAuth 登录~~ — 已补（`feishu auth login` 浏览器授权 + refresh_token 自动续期）
+- ~~任务子任务和提醒~~ — 已补（create-subtask / list-subtasks / --reminder / add-follower）
+- ~~文档插入图片和文件~~ — 已补（upload-image / upload-file，multipart 上传）
 
 反过来，5 个企业管理领域是**我有、官方没有的**：审批流程、OKR、考勤记录、汇报规则、管理后台（审计日志/统计）。这些在官方 CLI 的 GitHub Issues 里还在排队。
 
-选哪个取决于你的场景。重度依赖邮件收发？官方更合适。做文档读写、消息收发、表格操作、日历管理这些高频操作？655 tokens 的方案性价比高得多。
+## 146 个端点，按场景看
 
-## 29 类能力，按场景看
-
-🔄 **办公自动化** — 搜文档、写文档、更新多维表格（支持批量操作和字段管理）、创建审批、查任务。Markdown 写入飞书文档，自动转换为飞书 Block 格式。
+🔄 **办公自动化** — 搜文档、写文档、往文档里插图片/文件、更新多维表格（支持批量操作和字段管理）、创建审批、查任务/子任务。Markdown 写入飞书文档，自动转换为飞书 Block 格式。
 
 💬 **IM 全家桶** — 发消息、回复、转发、撤回、查已读。还有表情回应、消息置顶、合并转发、加急通知（app/短信/电话三种方式）。群管理：建群、改群、拉人、踢人、设公告、搜群、获取分享链接。
 
 📅 **日程与会议** — 查日历、创建事件、查空闲忙碌（freebusy）、管理参会者、RSVP 回复、展开重复事件、预约视频会议、拉取妙记转写。
 
+📧 **邮件系统** — 发送邮件、收件箱列表、邮件详情、创建/发送/删除草稿、文件夹管理。需要 `--as user` 用户身份。
+
 📊 **企业管理** — OKR（列表/详情/周期）、考勤（打卡记录/统计/班次）、汇报规则、审计日志、部门和用户使用统计、通讯录、企业百科。
 
-支持 `--as user` 切换用户身份，访问个人日历和任务。还有两个内置 Workflow 模板：会议纪要汇总和站会日报。
+🔔 **实时事件** — `feishu event subscribe` 长连接监听飞书事件流，NDJSON 输出，自动重连。Agent 可作为后台子进程运行。
 
-不够用？`feishu tool call <API名> '<json>'` 直接调用 134 个端点中的任何一个。
+支持 `--as user` 切换用户身份（OAuth 浏览器授权 + token 自动续期），访问个人日历、任务、邮箱等资源。还有三个内置 Workflow 模板：会议纪要汇总、站会日报、图表插入文档。
+
+不够用？`feishu tool call <API名> '<json>'` 直接调用 146 个端点中的任何一个。
 
 ## 不挑 Agent，不绑框架
 
@@ -95,6 +97,9 @@ npm install && npm run build && npm link
 # 配置飞书应用（在 open.feishu.cn 创建）
 feishu config set --app-id <你的app_id> --app-secret <你的app_secret>
 
+# OAuth 登录（用户身份，可选）
+feishu auth login
+
 # 注册为 Skill（按你的 Agent 选择）
 ln -sf "$(pwd)/skill" ~/.claude/skills/feishu   # Claude Code
 ln -sf "$(pwd)/skill" ~/.gemini/skills/feishu   # Gemini CLI
@@ -105,7 +110,7 @@ ln -sf "$(pwd)/skill" ~/.gemini/skills/feishu   # Gemini CLI
 
 ## 最后
 
-655 tokens。134 个 API。29 类能力。5 个官方还没做的领域。
+655 tokens。146 个 API。29 类能力。6 个差距全部清零。5 个官方还没做的领域。
 
 官方 CLI 做得不错，解决的是"全量覆盖"的问题。我要解决的是"Agent 上下文寸土寸金"的问题。两个问题，两个答案。
 

@@ -1,7 +1,7 @@
 ---
 name: feishu-max-saver
 description: >
-  飞书全平台 AI Skill — 134 个 API，29 类能力，双身份模式（--as user/bot）。
+  飞书全平台 AI Skill — 146 个 API，29 类能力，双身份模式（--as user/bot）。
   覆盖：文档读写搜索、Block、文件夹、Wiki、IM消息（发/回/转/撤/表情/置顶/合并转发/加急）、
   多维表格（CRUD/批量/字段/视图）、日历（事件/参会者/空闲忙碌/RSVP）、群聊管理、
   通讯录、任务、审批、电子表格、评论、搜索、妙记、视频会议、文档权限、邮箱、
