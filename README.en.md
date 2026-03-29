@@ -54,9 +54,8 @@ In the interest of transparency:
 
 - **Full email system** — Official supports email CRUD (read/send/draft/reply/labels). We only have mailgroup queries.
 - **Event WebSocket subscriptions** — Official supports real-time event push via long-lived connections. We're a CLI tool, not a persistent service.
-- **Whiteboard rendering** — Official supports Mermaid → Feishu whiteboard. We don't.
 
-~~Interactive OAuth login~~ — added (`feishu auth login` with browser OAuth + auto refresh_token renewal). ~~Task subtasks and reminders~~ — added. ~~Document media insertion~~ — added.
+~~Whiteboard rendering~~ — added (Mermaid → PNG → upload-image → block create, see workflows.md). ~~Interactive OAuth login~~ — added. ~~Task subtasks and reminders~~ — added. ~~Document media insertion~~ — added.
 
 Remaining gaps have limited impact on most Agent workflows. But if your use case depends heavily on email, the official CLI may be a better fit.
 

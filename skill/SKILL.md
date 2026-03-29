@@ -41,5 +41,5 @@ feishu tool call <工具名> '<json>'    # 调用任意 API
 ## 备注
 
 - `--as user` 用户身份（需 user_access_token），默认 bot
-- Workflow 模板见 `references/workflows.md`
+- Workflow 模板见 `references/workflows.md`（会议纪要/站会日报/图表插入文档）
 - 完整参数见 `references/commands.md`

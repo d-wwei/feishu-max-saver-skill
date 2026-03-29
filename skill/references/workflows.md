@@ -105,3 +105,55 @@ Multi-step workflows composed from existing feishu CLI commands. AI agent reads 
 - Use `--as user` for personal calendar and task access
 - Calendar times are RFC3339 format
 - Tasks API returns incomplete tasks by default
+
+---
+
+## Diagram to Document (图表插入文档)
+
+**Trigger:** "画个流程图" / "插入图表" / "add diagram" / "insert chart"
+
+### Prerequisites
+
+用户需安装 mermaid-cli（仅首次）：
+```
+npm install -g @mermaid-js/mermaid-cli
+```
+
+### Steps
+
+1. Agent 生成 Mermaid 语法，写入临时文件：
+   ```bash
+   cat > /tmp/diagram.mmd << 'EOF'
+   graph LR
+     A[用户请求] --> B[Agent 处理]
+     B --> C[调用飞书 API]
+     C --> D[返回结果]
+   EOF
+   ```
+
+2. 渲染为 PNG：
+   ```bash
+   mmdc -i /tmp/diagram.mmd -o /tmp/diagram.png -b transparent
+   ```
+
+3. 上传图片到飞书，拿到 file_token：
+   ```bash
+   feishu doc upload-image /tmp/diagram.png --parent <docToken>
+   # → {"data": {"file_token": "boxcnXXX"}}
+   ```
+
+4. 在文档中插入图片 block：
+   ```bash
+   feishu block create <docId> <parentBlockId> --body '{"block_type":27,"image":{"token":"boxcnXXX"}}'
+   ```
+
+5. 清理临时文件：
+   ```bash
+   rm /tmp/diagram.mmd /tmp/diagram.png
+   ```
+
+### Notes
+- 支持所有 Mermaid 图表类型：flowchart、sequence、gantt、pie、mindmap 等
+- 如果 mermaid-cli 未安装，提示用户运行 `npm install -g @mermaid-js/mermaid-cli`
+- 也可以用其他渲染工具（D2、PlantUML），只要输出 PNG/SVG 即可
+- SVG 需先转为 PNG 再上传（飞书图片 block 不支持 SVG）
