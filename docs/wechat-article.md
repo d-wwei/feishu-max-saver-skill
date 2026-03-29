@@ -95,8 +95,10 @@ npm install && npm run build && npm link
 # 配置飞书应用（在 open.feishu.cn 创建）
 feishu config set --app-id <你的app_id> --app-secret <你的app_secret>
 
-# 注册为 Skill
-ln -sf "$(pwd)/skill" ~/.claude/skills/feishu
+# 注册为 Skill（按你的 Agent 选择）
+ln -sf "$(pwd)/skill" ~/.claude/skills/feishu   # Claude Code
+ln -sf "$(pwd)/skill" ~/.gemini/skills/feishu   # Gemini CLI
+# 其他 Agent：symlink skill/ 到 Agent 的 Skill 加载路径
 ```
 
 5 步。从零到能用。

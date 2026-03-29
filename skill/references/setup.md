@@ -3,16 +3,23 @@
 ## 安装
 
 ```bash
-git clone https://gitlab.futunn.com/leohuang/feishu-cli.git
-cd feishu-cli
+git clone https://github.com/d-wwei/feishu-max-saver-skill.git
+cd feishu-max-saver-skill
 npm install && npm run build
 npm link                              # 全局可用 feishu 命令
+```
 
-# 注册 skill (macOS / Linux)
+注册 Skill（按你使用的 Agent 选择）：
+
+```bash
+# Claude Code
 ln -sf "$(pwd)/skill" ~/.claude/skills/feishu
 
-# 注册 skill (Windows PowerShell, 需管理员权限)
-# New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.claude\skills\feishu" -Target "$(Get-Location)\skill"
+# Gemini CLI
+ln -sf "$(pwd)/skill" ~/.gemini/skills/feishu
+
+# 其他 Agent — 将 skill/ 目录注册到 Agent 的 Skill 加载路径
+# 或直接让 Agent 读取 skill/SKILL.md 作为系统提示
 ```
 
 ## 配置

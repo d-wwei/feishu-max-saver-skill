@@ -89,17 +89,20 @@ Configure your Feishu app credentials (create an app on the [Feishu Open Platfor
 feishu config set --app-id <app_id> --app-secret <app_secret>
 ```
 
-Register as an AI Skill:
+Register as an AI Skill (pick your Agent):
 
 ```bash
-# macOS / Linux
+# Claude Code
 ln -sf "$(pwd)/skill" ~/.claude/skills/feishu
 
-# Windows (PowerShell, admin)
-New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.claude\skills\feishu" -Target "$(Get-Location)\skill"
+# Gemini CLI
+ln -sf "$(pwd)/skill" ~/.gemini/skills/feishu
+
+# Other Agents — symlink skill/ into your Agent's skill loading path,
+# or feed skill/SKILL.md directly as part of the system prompt.
 ```
 
-Once registered, mentioning "Feishu" or "Lark" in any AI session auto-triggers the skill. Works with Claude Code, Gemini CLI, and any Agent supporting the Skill protocol.
+Once registered, mentioning "Feishu" or "Lark" in any AI session auto-triggers the skill. Works with any Agent that can run shell commands.
 
 ## Dual Identity Mode
 

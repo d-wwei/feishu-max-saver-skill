@@ -91,17 +91,20 @@ npm install && npm run build && npm link
 feishu config set --app-id <app_id> --app-secret <app_secret>
 ```
 
-注册为 AI Skill：
+注册为 AI Skill（按你使用的 Agent 选择）：
 
 ```bash
-# macOS / Linux
+# Claude Code
 ln -sf "$(pwd)/skill" ~/.claude/skills/feishu
 
-# Windows (PowerShell, 管理员)
-New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.claude\skills\feishu" -Target "$(Get-Location)\skill"
+# Gemini CLI
+ln -sf "$(pwd)/skill" ~/.gemini/skills/feishu
+
+# 其他 Agent — 将 skill/ 目录注册到 Agent 的 Skill 加载路径即可
+# 或者直接让 Agent 读取 skill/SKILL.md 作为系统提示的一部分
 ```
 
-注册后，AI 会话中提到"飞书"自动触发。适用于 Claude Code、Gemini CLI 等任何支持 Skill 协议的 Agent。
+注册后，AI 会话中提到"飞书"自动触发。适用于任何能执行 shell 命令的 Agent。
 
 ## 双身份模式
 
