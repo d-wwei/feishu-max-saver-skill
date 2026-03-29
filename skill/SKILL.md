@@ -21,10 +21,6 @@ description: >
 
 飞书 IM 桥接对话中**直接回复**，不要用 `feishu im send`。`im send` 仅用于主动通知第三方。
 
-## 29 类能力
-
-文档 | Block | 文件夹 | Wiki | IM消息 | IM高级(reactions/pins/urgent) | 多维表格 | 表格高级(batch/field/view) | 日历 | 日历高级(freebusy/attendees/RSVP) | 群聊 | 通讯录 | 任务 | 审批 | 电子表格 | 评论 | 搜索 | 妙记 | 视频会议 | 权限 | 邮箱 | 百科 | OKR | 汇报 | 租户 | 考勤 | 管理后台 | 通用(tool call)
-
 ## 常用速查
 
 ```
