@@ -10,7 +10,9 @@
 
 ## What Is This
 
-A full-platform Feishu/Lark CLI built for AI Agents. 125 REST API endpoints, 29 capability categories, dual identity mode.
+"Max Saver" is literal: **maximum context savings for AI Agents**.
+
+Connecting an AI Agent to Feishu/Lark typically costs 15,000+ tokens of context window — burned on loading tool definitions before any real work begins. This project brings that number down to **655 tokens**. Same 125 API endpoints, same 29 capability categories, **4% of the context cost**.
 
 ```bash
 feishu doc search "Q2 report"                    # Search docs
@@ -20,7 +22,7 @@ feishu calendar freebusy --start ... --end ...   # Check availability
 feishu tool call <any_api_name> '<json>'         # Call any of 125 endpoints
 ```
 
-All output is structured JSON. Agent-ready.
+All output is structured JSON. Agent-ready. Framework-agnostic — if your Agent can run shell commands, it works.
 
 ## Why Not the Official Options
 
@@ -30,13 +32,34 @@ All output is structured JSON. Agent-ready.
 | Official Lark CLI (19 skill files) | ~15,000+ tokens | npx skills only | Full load at startup |
 | **This project** | **~655 tokens** | **Any Agent** | **On-demand** |
 
-655 vs 15,000 — 96% less context. For an Agent, saved context is extra room to think.
+### How We Get to 655 Tokens
 
-**Two-tier loading:** SKILL.md (~655 tokens) stays resident. The full command reference (~3,600 tokens) loads only when specific parameters are needed. Most tasks never need the second tier.
+Three design decisions, stacked:
 
-### Capabilities the Official CLI Doesn't Have
+**1. Two-tier loading.** SKILL.md (~655 tokens) contains only the capability overview and common command patterns — it stays resident. The full 80+ command reference (~3,600 tokens) lives in `references/commands.md` and loads only when the Agent needs specific parameters. Most tasks never hit the second tier.
 
-Approval workflows, OKR, attendance records, report rules, admin console (audit logs, stats) — 5 enterprise management domains still in the official CLI's backlog.
+**2. CLI, not MCP.** MCP requires injecting JSON schemas for every tool into context at connection time. 1,350 tools = 1,350 schemas. This project takes the CLI route — the Agent runs `feishu <command>` directly. No schemas to preload.
+
+**3. Skill protocol, not MCP protocol.** Skills are on-demand: SKILL.md loads when "Feishu" appears in conversation, unloads when done. MCP servers are persistent: loaded at startup regardless of whether this conversation needs Feishu at all.
+
+Combined: 655 vs 15,000. 96% saved.
+
+### What We Have That the Official CLI Doesn't
+
+Approval workflows, OKR, attendance records, report rules, admin console (audit logs, stats) — 5 enterprise management domains still in the official CLI's issue backlog.
+
+### What the Official CLI Has That We Don't
+
+In the interest of transparency:
+
+- **Full email system** — Official supports complete email CRUD (read/send/draft/reply/labels). We only have mailgroup queries.
+- **Task subtasks and reminders** — Official supports subtasks, reminders, followers. We have basic task CRUD only.
+- **Document media insertion** — Official can insert images/files into docs. Our `doc write` accepts Markdown text only.
+- **Interactive OAuth login** — Official has an interactive OAuth flow. Our `--as user` mode requires manually pasting a token.
+- **Event WebSocket subscriptions** — Official supports real-time event push via long-lived connections. We're a CLI tool, not a persistent service.
+- **Whiteboard rendering** — Official supports Mermaid → Feishu whiteboard. We don't.
+
+These gaps have limited impact on most Agent workflows (email and WebSocket are the two most likely needs). But if your use case depends heavily on any of the above, the official CLI may be a better fit.
 
 ## 29 Capability Categories
 
