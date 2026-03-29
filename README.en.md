@@ -52,11 +52,7 @@ Approval workflows, OKR, attendance records, report rules, admin console (audit 
 
 In the interest of transparency:
 
-- **Full email system** — Official supports email CRUD (read/send/draft/reply/labels). We only have mailgroup queries.
-
-~~Event WebSocket subscriptions~~ — added (`feishu event subscribe`, NDJSON stream, auto-reconnect). ~~Whiteboard rendering~~ — added. ~~Interactive OAuth login~~ — added. ~~Task subtasks and reminders~~ — added. ~~Document media insertion~~ — added.
-
-5 of 6 original gaps resolved. Only full email system remains. If your use case depends heavily on email, the official CLI may be a better fit.
+**All 6 original gaps resolved:** ~~Full email system~~ — added (send/list/draft/folder). ~~Event WebSocket subscriptions~~ — added. ~~Whiteboard rendering~~ — added. ~~Interactive OAuth login~~ — added. ~~Task subtasks and reminders~~ — added. ~~Document media insertion~~ — added.
 
 ## 29 Capability Categories
 

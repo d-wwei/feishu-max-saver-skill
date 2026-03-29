@@ -216,6 +216,23 @@ feishu mail list-group-members <mailgroupId>           # 邮件组成员
 feishu mail list-public-mailboxes                      # 列出公共邮箱
 ```
 
+## 邮箱 - 用户邮件 (Mail - User Mailbox)
+
+```
+feishu mail send <mailboxId> --to <addr1,addr2> --subject <标题> --body '<HTML>'  # 发送邮件，可加 --cc --bcc
+feishu mail list-messages <mailboxId>                   # 列出收件箱，可加 --page-size
+feishu mail get-message <mailboxId> <messageId>         # 邮件详情
+feishu mail delete-message <mailboxId> <messageId>      # 删除邮件
+feishu mail create-draft <mailboxId> --to <addr> --subject <标题> --body '<HTML>'  # 创建草稿
+feishu mail send-draft <mailboxId> <draftId>            # 发送草稿
+feishu mail delete-draft <mailboxId> <draftId>          # 删除草稿
+feishu mail list-folders <mailboxId>                    # 列出邮箱文件夹
+feishu mail create-folder <mailboxId> --name <文件夹名>  # 创建文件夹
+feishu mail delete-folder <mailboxId> <folderId>        # 删除文件夹
+```
+
+邮件操作需要 `--as user` 用户身份。mailboxId 通常传 `me` 表示当前用户。
+
 ## 企业百科 (Lingo)
 
 ```

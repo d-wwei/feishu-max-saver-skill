@@ -31,6 +31,7 @@ feishu calendar list-events/create-event/freebusy <args>
 feishu chat list/info/create/members/search <args>
 feishu task list/create/complete <args>
 feishu sheets read/write/append <args>
+feishu mail send/list-messages/create-draft/send-draft <args>  # 邮件收发和草稿
 feishu event subscribe               # 实时事件流（NDJSON，长连接，Ctrl+C 终止）
 feishu tool call <工具名> '<json>'    # 调用任意 API
 ```
