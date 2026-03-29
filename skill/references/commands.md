@@ -263,6 +263,17 @@ feishu admin department-stats --department-id <id> --start-date <YYYYMMDD> --end
 feishu admin user-stats --department-id <id> --start-date <YYYYMMDD> --end-date <YYYYMMDD>
 ```
 
+## 事件订阅 (Event)
+
+```
+feishu event subscribe                  # 监听飞书实时事件（长连接，NDJSON 输出）
+feishu event subscribe --no-reconnect   # 断开后不自动重连
+```
+
+长连接命令，不会退出。每收到一个事件输出一行 JSON 到 stdout。
+需要先在飞书开放平台后台配置事件订阅（启用长连接模式）。
+Agent 可作为后台子进程运行，从 stdout 读取事件流。
+
 ## 通用
 
 ```

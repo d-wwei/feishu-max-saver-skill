@@ -2,6 +2,7 @@
 import { Command } from 'commander'
 import { registerAuthCommand } from './commands/auth.js'
 import { registerConfigCommand } from './commands/config.js'
+import { registerEventCommand } from './commands/event.js'
 import { registerDocCommand } from './commands/doc.js'
 import { registerWikiCommand } from './commands/wiki.js'
 import { registerToolCommand } from './commands/tool.js'
@@ -40,6 +41,7 @@ const program = new Command()
 // Commands that don't need auth
 registerConfigCommand(program)
 registerAuthCommand(program)
+registerEventCommand(program)
 
 // Lazy service initializer
 let _service: FeishuService | null = null
