@@ -57,6 +57,23 @@ describe('config', () => {
     expect(config).toBeNull()
   })
 
+  it('writes and reads config with user_access_token', () => {
+    const config: FeishuConfig = {
+      app_id: 'cli_abc', app_secret: 'secret123',
+      auth_type: 'tenant', user_access_token: 'u-tok-456',
+    }
+    writeConfig(config, configPath)
+    const read = readConfig(configPath)
+    expect(read?.user_access_token).toBe('u-tok-456')
+  })
+
+  it('reads config without user_access_token', () => {
+    const config: FeishuConfig = { app_id: 'cli_abc', app_secret: 'secret123', auth_type: 'tenant' }
+    writeConfig(config, configPath)
+    const read = readConfig(configPath)
+    expect(read?.user_access_token).toBeUndefined()
+  })
+
   describe('getConfigMode', () => {
     it('returns proxy for lark_mcp_url config', () => {
       expect(getConfigMode({ lark_mcp_url: 'https://example.com' })).toBe('proxy')

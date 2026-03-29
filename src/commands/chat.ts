@@ -164,4 +164,72 @@ export function registerChatCommand(program: Command, getService: () => Promise<
         process.exit(1)
       }
     })
+
+  chat
+    .command('update')
+    .description('Update chat properties')
+    .argument('<chatId>', 'Chat ID')
+    .option('--name <name>', 'New chat name')
+    .option('--description <text>', 'New description')
+    .option('--icon <key>', 'New icon key')
+    .action(async (chatId: string, opts) => {
+      try {
+        const svc = await getService()
+        const body: Record<string, string> = {}
+        if (opts.name) body.name = opts.name
+        if (opts.description) body.description = opts.description
+        if (opts.icon) body.icon = opts.icon
+        if (Object.keys(body).length === 0) {
+          outputError('Provide at least one option: --name, --description, or --icon', 'CHAT_UPDATE_NO_FIELDS')
+          process.exit(1)
+        }
+        const result = await svc.callTool('im_v1_chat_update', {
+          path: { chat_id: chatId },
+          body,
+        })
+        outputSuccess(result)
+      } catch (err) {
+        outputError(err instanceof Error ? err.message : String(err), 'CHAT_UPDATE_ERROR')
+        process.exit(1)
+      }
+    })
+
+  chat
+    .command('link')
+    .description('Get chat share link')
+    .argument('<chatId>', 'Chat ID')
+    .action(async (chatId: string) => {
+      try {
+        const svc = await getService()
+        const result = await svc.callTool('im_v1_chat_link', {
+          path: { chat_id: chatId },
+          body: {},
+        })
+        outputSuccess(result)
+      } catch (err) {
+        outputError(err instanceof Error ? err.message : String(err), 'CHAT_LINK_ERROR')
+        process.exit(1)
+      }
+    })
+
+  chat
+    .command('search')
+    .description('Search chats by keyword')
+    .argument('<query>', 'Search keyword')
+    .option('--page-size <n>', 'Page size (max 100)', '20')
+    .option('--page-token <token>', 'Page token for pagination')
+    .action(async (query: string, opts) => {
+      try {
+        const svc = await getService()
+        const queryParams: Record<string, string> = { query, page_size: opts.pageSize }
+        if (opts.pageToken) queryParams.page_token = opts.pageToken
+        const result = await svc.callTool('im_v1_chat_search', {
+          query: queryParams,
+        })
+        outputSuccess(result)
+      } catch (err) {
+        outputError(err instanceof Error ? err.message : String(err), 'CHAT_SEARCH_ERROR')
+        process.exit(1)
+      }
+    })
 }

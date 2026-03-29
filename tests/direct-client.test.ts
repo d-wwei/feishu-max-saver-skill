@@ -166,9 +166,33 @@ describe('createDirectService', () => {
     it('returns all mapped tools', async () => {
       const svc = createDirectService(config)
       const tools = await svc.listTools()
-      expect(tools.length).toBe(12)
+      expect(tools.length).toBeGreaterThan(100)
       expect(tools.find(t => t.name === 'docx_v1_document_create')).toBeDefined()
       expect(tools.find(t => t.name === 'drive_v1_file_list')).toBeDefined()
+      expect(tools.find(t => t.name === 'im_v1_message_reaction_create')).toBeDefined()
+      expect(tools.find(t => t.name === 'im_v1_pin_create')).toBeDefined()
+      expect(tools.find(t => t.name === 'im_v1_chat_search')).toBeDefined()
+    })
+  })
+
+  describe('user identity mode', () => {
+    it('uses user_access_token when identity is user', async () => {
+      const userConfig = { app_id: 'test_app', app_secret: 'test_secret', user_access_token: 'u-tok-123' }
+      mockApiResponse({ items: [] })
+
+      const svc = createDirectService(userConfig, 'user')
+      await svc.callTool('im_v1_chat_list', { query: {} })
+
+      // Should NOT fetch tenant token; should use user token directly
+      expect(mockFetch).toHaveBeenCalledTimes(1) // only API call, no token call
+      const apiCall = mockFetch.mock.calls[0]
+      expect(apiCall[1].headers['Authorization']).toBe('Bearer u-tok-123')
+    })
+
+    it('throws when user identity but no user_access_token', async () => {
+      const svc = createDirectService({ app_id: 'test_app', app_secret: 'test_secret' }, 'user')
+      await expect(svc.callTool('im_v1_chat_list', { query: {} }))
+        .rejects.toThrow('User access token not configured')
     })
   })
 

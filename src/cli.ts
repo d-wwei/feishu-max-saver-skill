@@ -34,6 +34,7 @@ const program = new Command()
   .name('feishu')
   .description('Feishu CLI — direct MCP connection for AI consumption')
   .version('0.2.0')
+  .option('--as <identity>', 'Run as user or bot identity', 'bot')
 
 // Config command (no auth needed)
 registerConfigCommand(program)
@@ -47,7 +48,8 @@ async function getService(): Promise<FeishuService> {
     outputError('No configuration found. Run: feishu config set --help', 'CONFIG_NOT_FOUND')
     process.exit(2)
   }
-  _service = await initService(config)
+  const identity = (program.opts().as as 'user' | 'bot') || 'bot'
+  _service = await initService(config, identity)
   return _service
 }
 

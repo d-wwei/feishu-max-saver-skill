@@ -27,21 +27,56 @@ const TOOL_MAP: Record<string, ToolMapping> = {
   im_v1_message_reply: { method: 'POST', path: '/open-apis/im/v1/messages/{message_id}/reply' },
   im_v1_message_list: { method: 'GET', path: '/open-apis/im/v1/messages' },
   im_v1_message_get: { method: 'GET', path: '/open-apis/im/v1/messages/{message_id}' },
+  im_v1_message_forward: { method: 'POST', path: '/open-apis/im/v1/messages/{message_id}/forward' },
+  im_v1_message_delete: { method: 'DELETE', path: '/open-apis/im/v1/messages/{message_id}' },
+  im_v1_message_read_users: { method: 'GET', path: '/open-apis/im/v1/messages/{message_id}/read_users' },
+  im_v1_message_merge_forward: { method: 'POST', path: '/open-apis/im/v1/messages/merge_forward' },
+  im_v1_message_urgent_app: { method: 'PATCH', path: '/open-apis/im/v1/messages/{message_id}/urgent_app' },
+  im_v1_message_urgent_sms: { method: 'PATCH', path: '/open-apis/im/v1/messages/{message_id}/urgent_sms' },
+  im_v1_message_urgent_phone: { method: 'PATCH', path: '/open-apis/im/v1/messages/{message_id}/urgent_phone' },
+
+  // Reactions
+  im_v1_message_reaction_create: { method: 'POST', path: '/open-apis/im/v1/messages/{message_id}/reactions' },
+  im_v1_message_reaction_delete: { method: 'DELETE', path: '/open-apis/im/v1/messages/{message_id}/reactions/{reaction_id}' },
+  im_v1_message_reaction_list: { method: 'GET', path: '/open-apis/im/v1/messages/{message_id}/reactions' },
+
+  // Pins
+  im_v1_pin_create: { method: 'POST', path: '/open-apis/im/v1/pins' },
+  im_v1_pin_delete: { method: 'DELETE', path: '/open-apis/im/v1/pins/{message_id}' },
+  im_v1_pin_list: { method: 'GET', path: '/open-apis/im/v1/pins' },
 
   // Bitable
   bitable_v1_app_table_list: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables' },
   bitable_v1_app_table_record_list: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records' },
   bitable_v1_app_table_record_get: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/{record_id}' },
   bitable_v1_app_table_record_create: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records' },
-  bitable_v1_app_table_record_update: { method: 'PATCH', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/{record_id}' },  // PUT in feishu docs
+  bitable_v1_app_table_record_update: { method: 'PATCH', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/{record_id}' },
   bitable_v1_app_table_record_delete: { method: 'DELETE', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/{record_id}' },
   bitable_v1_app_table_record_search: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/search' },
+  bitable_v1_app_table_record_batch_create: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/batch_create' },
+  bitable_v1_app_table_record_batch_update: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/batch_update' },
+  bitable_v1_app_table_record_batch_delete: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/batch_delete' },
+  bitable_v1_app_table_record_batch_get: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/batch_get' },
+  bitable_v1_app_table_field_list: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields' },
+  bitable_v1_app_table_field_create: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields' },
+  bitable_v1_app_table_field_update: { method: 'PUT', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields/{field_id}' },
+  bitable_v1_app_table_field_delete: { method: 'DELETE', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields/{field_id}' },
+  bitable_v1_app_table_view_list: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/views' },
+  bitable_v1_app_table_view_create: { method: 'POST', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/views' },
+  bitable_v1_app_table_view_get: { method: 'GET', path: '/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/views/{view_id}' },
 
   // Chat
   im_v1_chat_list: { method: 'GET', path: '/open-apis/im/v1/chats' },
   im_v1_chat_get: { method: 'GET', path: '/open-apis/im/v1/chats/{chat_id}' },
   im_v1_chat_create: { method: 'POST', path: '/open-apis/im/v1/chats' },
+  im_v1_chat_update: { method: 'PUT', path: '/open-apis/im/v1/chats/{chat_id}' },
   im_v1_chat_members: { method: 'GET', path: '/open-apis/im/v1/chats/{chat_id}/members' },
+  im_v1_chat_members_create: { method: 'POST', path: '/open-apis/im/v1/chats/{chat_id}/members' },
+  im_v1_chat_members_delete: { method: 'DELETE', path: '/open-apis/im/v1/chats/{chat_id}/members' },
+  im_v1_chat_link: { method: 'POST', path: '/open-apis/im/v1/chats/{chat_id}/link' },
+  im_v1_chat_search: { method: 'GET', path: '/open-apis/im/v1/chats/search' },
+  im_v1_chat_announcement_get: { method: 'GET', path: '/open-apis/im/v1/chats/{chat_id}/announcement' },
+  im_v1_chat_announcement_patch: { method: 'PATCH', path: '/open-apis/im/v1/chats/{chat_id}/announcement' },
 
   // Contact
   contact_v3_user_get: { method: 'GET', path: '/open-apis/contact/v3/users/{user_id}' },
@@ -83,6 +118,13 @@ const TOOL_MAP: Record<string, ToolMapping> = {
   calendar_v4_calendar_event_get: { method: 'GET', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}' },
   calendar_v4_calendar_event_create: { method: 'POST', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events' },
   calendar_v4_calendar_event_delete: { method: 'DELETE', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}' },
+  calendar_v4_calendar_event_search: { method: 'POST', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/search' },
+  calendar_v4_calendar_event_reply: { method: 'POST', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}/reply' },
+  calendar_v4_calendar_event_instances: { method: 'GET', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}/instances' },
+  calendar_v4_calendar_event_attendee_list: { method: 'GET', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}/attendees' },
+  calendar_v4_calendar_event_attendee_create: { method: 'POST', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}/attendees' },
+  calendar_v4_calendar_event_attendee_batch_delete: { method: 'POST', path: '/open-apis/calendar/v4/calendars/{calendar_id}/events/{event_id}/attendees/batch_delete' },
+  calendar_v4_freebusy_list: { method: 'POST', path: '/open-apis/calendar/v4/freebusy/list' },
 
   // Minutes
   minutes_v1_minute_get: { method: 'GET', path: '/open-apis/minutes/v1/minutes/{minute_token}' },
@@ -145,10 +187,17 @@ interface TokenCache {
   expiresAt: number
 }
 
-export function createDirectService(config: FeishuConfig): FeishuService {
+export function createDirectService(config: FeishuConfig, identity: 'user' | 'bot' = 'bot'): FeishuService {
   let tokenCache: TokenCache | null = null
 
   async function getAccessToken(): Promise<string> {
+    if (identity === 'user') {
+      if (!config.user_access_token) {
+        throw new Error('User access token not configured. Add user_access_token to ~/.feishu/config.yml')
+      }
+      return config.user_access_token
+    }
+
     if (tokenCache && Date.now() < tokenCache.expiresAt) {
       return tokenCache.token
     }
@@ -274,6 +323,19 @@ function getToolDescription(name: string): string {
     im_v1_message_reply: 'Reply to a message',
     im_v1_message_list: 'List messages in a chat',
     im_v1_message_get: 'Get a specific message',
+    im_v1_message_forward: 'Forward a message',
+    im_v1_message_delete: 'Recall (delete) a message',
+    im_v1_message_read_users: 'Get message read status',
+    im_v1_message_merge_forward: 'Merge forward multiple messages',
+    im_v1_message_urgent_app: 'Send urgent notification via app',
+    im_v1_message_urgent_sms: 'Send urgent notification via SMS',
+    im_v1_message_urgent_phone: 'Send urgent notification via phone call',
+    im_v1_message_reaction_create: 'Add a reaction to a message',
+    im_v1_message_reaction_delete: 'Remove a reaction from a message',
+    im_v1_message_reaction_list: 'List reactions on a message',
+    im_v1_pin_create: 'Pin a message',
+    im_v1_pin_delete: 'Unpin a message',
+    im_v1_pin_list: 'List pinned messages in a chat',
     bitable_v1_app_table_list: 'List tables in a bitable app',
     bitable_v1_app_table_record_list: 'List records in a table',
     bitable_v1_app_table_record_get: 'Get a specific record',
@@ -281,6 +343,17 @@ function getToolDescription(name: string): string {
     bitable_v1_app_table_record_update: 'Update a record in a table',
     bitable_v1_app_table_record_delete: 'Delete a record from a table',
     bitable_v1_app_table_record_search: 'Search records in a table',
+    bitable_v1_app_table_record_batch_create: 'Batch create records (up to 1000)',
+    bitable_v1_app_table_record_batch_update: 'Batch update records (up to 1000)',
+    bitable_v1_app_table_record_batch_delete: 'Batch delete records (up to 500)',
+    bitable_v1_app_table_record_batch_get: 'Batch get records by IDs (up to 100)',
+    bitable_v1_app_table_field_list: 'List fields in a table',
+    bitable_v1_app_table_field_create: 'Create a field in a table',
+    bitable_v1_app_table_field_update: 'Update a field in a table',
+    bitable_v1_app_table_field_delete: 'Delete a field from a table',
+    bitable_v1_app_table_view_list: 'List views in a table',
+    bitable_v1_app_table_view_create: 'Create a view in a table',
+    bitable_v1_app_table_view_get: 'Get view details',
     drive_v1_file_comment_list: 'List comments on a document',
     drive_v1_file_comment_get: 'Get a specific comment',
     drive_v1_file_comment_create: 'Add a comment to a document',
@@ -291,10 +364,24 @@ function getToolDescription(name: string): string {
     calendar_v4_calendar_event_get: 'Get a specific event',
     calendar_v4_calendar_event_create: 'Create a calendar event',
     calendar_v4_calendar_event_delete: 'Delete a calendar event',
+    calendar_v4_calendar_event_search: 'Search events by keyword',
+    calendar_v4_calendar_event_reply: 'RSVP to an event (accept/decline/tentative)',
+    calendar_v4_calendar_event_instances: 'List instances of a recurring event',
+    calendar_v4_calendar_event_attendee_list: 'List attendees of an event',
+    calendar_v4_calendar_event_attendee_create: 'Add attendees to an event',
+    calendar_v4_calendar_event_attendee_batch_delete: 'Remove attendees from an event',
+    calendar_v4_freebusy_list: 'Query free/busy status for users or rooms',
     im_v1_chat_list: 'List chats the bot is in',
     im_v1_chat_get: 'Get chat (group) info',
     im_v1_chat_create: 'Create a new chat (group)',
+    im_v1_chat_update: 'Update chat properties',
     im_v1_chat_members: 'List members of a chat',
+    im_v1_chat_members_create: 'Add members to a chat',
+    im_v1_chat_members_delete: 'Remove members from a chat',
+    im_v1_chat_link: 'Get chat share link',
+    im_v1_chat_search: 'Search chats by keyword',
+    im_v1_chat_announcement_get: 'Get chat announcement',
+    im_v1_chat_announcement_patch: 'Update chat announcement',
     contact_v3_user_get: 'Get user info',
     contact_v3_user_search: 'Search users by keyword',
     contact_v3_department_get: 'Get department info',

@@ -10,11 +10,11 @@ export interface FeishuService {
   close(): Promise<void>
 }
 
-export async function initService(config: FeishuConfig): Promise<FeishuService> {
+export async function initService(config: FeishuConfig, identity: 'user' | 'bot' = 'bot'): Promise<FeishuService> {
   const mode = getConfigMode(config)
 
   if (mode === 'direct') {
-    return createDirectService(config)
+    return createDirectService(config, identity)
   }
 
   if (!config.lark_mcp_url) {

@@ -118,6 +118,14 @@ feishu im delete <messageId>                             # 撤回消息
 feishu im send-image <receiveId> --image-key <key>      # 发送图片（需先上传获取 image_key）
 feishu im send-file <receiveId> --file-key <key>        # 发送文件（需先上传获取 file_key）
 feishu im read-status <messageId>                        # 查看消息已读状态
+feishu im add-reaction <messageId> --emoji <type>        # 添加表情回应 (THUMBSUP, SMILE 等)
+feishu im remove-reaction <messageId> <reactionId>       # 移除表情回应
+feishu im list-reactions <messageId>                      # 列出表情回应
+feishu im pin <messageId>                                 # 置顶消息
+feishu im unpin <messageId>                               # 取消置顶
+feishu im list-pins <chatId>                              # 列出置顶消息
+feishu im merge-forward --message-ids <id1> <id2> --receive-id <chatId>  # 合并转发
+feishu im urgent <messageId> --type <app|sms|phone> --user-ids <id1>     # 加急消息
 ```
 
 ### 多维表格 (Bitable)
@@ -130,6 +138,17 @@ feishu bitable create-record <appToken> <tableId> --fields '<json>'
 feishu bitable update-record <appToken> <tableId> <recordId> --fields '<json>'
 feishu bitable delete-record <appToken> <tableId> <recordId>
 feishu bitable search-records <appToken> <tableId>       # 可加 --filter --sort --fields
+feishu bitable batch-create <appToken> <tableId> --records '<json array>'  # 批量创建 (≤1000)
+feishu bitable batch-update <appToken> <tableId> --records '<json array>'  # 批量更新 (≤1000)
+feishu bitable batch-delete <appToken> <tableId> --record-ids <id1> <id2>  # 批量删除 (≤500)
+feishu bitable batch-get <appToken> <tableId> --record-ids <id1> <id2>     # 批量查询 (≤100)
+feishu bitable list-fields <appToken> <tableId>          # 列出字段（列），可加 --view-id
+feishu bitable create-field <appToken> <tableId> --name <名> --type <n>    # 创建字段
+feishu bitable update-field <appToken> <tableId> <fieldId> --name <新名>   # 更新字段
+feishu bitable delete-field <appToken> <tableId> <fieldId>                 # 删除字段
+feishu bitable list-views <appToken> <tableId>           # 列出视图
+feishu bitable create-view <appToken> <tableId> --name <名> --type <grid|kanban|...>
+feishu bitable get-view <appToken> <tableId> <viewId>    # 视图详情
 ```
 
 ### 日历
@@ -140,6 +159,13 @@ feishu calendar list-events <calendarId>                 # 可加 --start --end
 feishu calendar get-event <calendarId> <eventId>
 feishu calendar create-event <calendarId> --summary <标题> --start <RFC3339> --end <RFC3339>
 feishu calendar delete-event <calendarId> <eventId>
+feishu calendar search-events <calendarId> --query <关键词>               # 搜索事件
+feishu calendar rsvp <calendarId> <eventId> --status <accept|decline|tentative>  # 回复日程
+feishu calendar list-instances <calendarId> <eventId>                     # 列出重复事件实例
+feishu calendar list-attendees <calendarId> <eventId>                     # 列出参会者
+feishu calendar add-attendees <calendarId> <eventId> --attendees '<json>' # 添加参会者
+feishu calendar remove-attendees <calendarId> <eventId> --attendee-ids <id1>  # 移除参会者
+feishu calendar freebusy --start <RFC3339> --end <RFC3339> --user-id <id> # 查空闲忙碌
 ```
 
 ### 群聊 (Chat)
@@ -153,6 +179,9 @@ feishu chat add-members <chatId> --id-list <id1> <id2>  # 添加群成员，可�
 feishu chat remove-members <chatId> --id-list <id1>     # 移除群成员
 feishu chat get-announcement <chatId>                   # 获取群公告
 feishu chat set-announcement <chatId> --content <文本>  # 设置群公告，可加 --revision
+feishu chat update <chatId> --name <新群名>             # 更新群属性，可加 --description --icon
+feishu chat link <chatId>                               # 获取群分享链接
+feishu chat search <关键词>                             # 搜索群聊，可加 --page-size
 ```
 
 ### 通讯录 (Contact)
@@ -300,8 +329,15 @@ feishu tool call <工具名> '<json>'      # 直接调用任意工具
 
 成功: `{"data": {...}}` → stdout | 失败: `{"error": "...", "code": "..."}` → stderr
 
+## Workflow 模板
+
+详见 `references/workflows.md`，包含：
+- **会议纪要汇总**: 查日历 → 查 VC 会议 → 查妙记 → 生成结构化报告
+- **站会日报**: 查日历 + 查任务 → 生成每日站会摘要
+
 ## 注意
 
+- 使用 `--as user` 以用户身份操作（需配置 user_access_token），默认以机器人身份（bot）操作
 - 删除不可恢复，`doc delete` 默认要求确认，脚本场景加 `-y`
 - block body / bitable fields 的 JSON 格式参考飞书开放平台文档
 - IM 发消息默认 `--receive-type chat_id`，发给个人用 `--receive-type open_id`

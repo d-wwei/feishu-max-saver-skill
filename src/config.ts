@@ -8,6 +8,7 @@ export interface FeishuConfig {
   app_id?: string
   app_secret?: string
   auth_type?: 'tenant' | 'user'
+  user_access_token?: string
 }
 
 export type ConfigMode = 'proxy' | 'direct'
@@ -27,11 +28,13 @@ export function readConfig(configPath = DEFAULT_CONFIG_PATH): FeishuConfig | nul
     return { lark_mcp_url: parsed.lark_mcp_url }
   }
   if (parsed?.app_id && parsed?.app_secret) {
-    return {
+    const cfg: FeishuConfig = {
       app_id: parsed.app_id,
       app_secret: parsed.app_secret,
       auth_type: parsed.auth_type ?? 'tenant',
     }
+    if (parsed.user_access_token) cfg.user_access_token = parsed.user_access_token
+    return cfg
   }
   return null
 }
