@@ -139,9 +139,13 @@ feishu contact list-dept                                # 列出子部门，可�
 ```
 feishu task list                                        # 列出任务
 feishu task get <taskId>                                # 任务详情
-feishu task create --summary <摘要>                     # 创建任务，可加 --due --description
+feishu task create --summary <摘要>                     # 可加 --due --description --reminder <分钟>
 feishu task complete <taskId>                           # 完成任务
 feishu task delete <taskId>                             # 删除任务
+feishu task create-subtask <taskId> --summary <摘要>    # 创建子任务，可加 --due --description
+feishu task list-subtasks <taskId>                      # 列出子任务
+feishu task add-follower <taskId> --id <userId>         # 添加关注者，可加 --id-type
+feishu task remove-follower <taskId> <followerId>       # 移除关注者
 ```
 
 ## 审批 (Approval)

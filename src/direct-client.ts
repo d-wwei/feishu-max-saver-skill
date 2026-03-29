@@ -92,6 +92,10 @@ const TOOL_MAP: Record<string, ToolMapping> = {
   task_v2_task_create: { method: 'POST', path: '/open-apis/task/v2/tasks' },
   task_v2_task_patch: { method: 'PATCH', path: '/open-apis/task/v2/tasks/{task_guid}' },
   task_v2_task_delete: { method: 'DELETE', path: '/open-apis/task/v2/tasks/{task_guid}' },
+  task_v2_task_subtask_create: { method: 'POST', path: '/open-apis/task/v2/tasks/{task_guid}/subtasks' },
+  task_v2_task_subtask_list: { method: 'GET', path: '/open-apis/task/v2/tasks/{task_guid}/subtasks' },
+  task_v2_task_follower_create: { method: 'POST', path: '/open-apis/task/v2/tasks/{task_guid}/followers' },
+  task_v2_task_follower_delete: { method: 'DELETE', path: '/open-apis/task/v2/tasks/{task_guid}/followers/{follower_id}' },
 
   // Approval
   approval_v4_instance_list: { method: 'GET', path: '/open-apis/approval/v4/instances' },
@@ -424,6 +428,10 @@ function getToolDescription(name: string): string {
     task_v2_task_create: 'Create a task',
     task_v2_task_patch: 'Update a task',
     task_v2_task_delete: 'Delete a task',
+    task_v2_task_subtask_create: 'Create a subtask',
+    task_v2_task_subtask_list: 'List subtasks of a task',
+    task_v2_task_follower_create: 'Add a follower to a task',
+    task_v2_task_follower_delete: 'Remove a follower from a task',
     approval_v4_instance_list: 'List approval instances',
     approval_v4_instance_get: 'Get approval instance details',
     approval_v4_instance_create: 'Create an approval instance',
