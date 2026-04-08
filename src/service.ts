@@ -3,6 +3,8 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 import type { FeishuConfig } from './config.js'
 import { getConfigMode } from './config.js'
 import { createDirectService } from './direct-client.js'
+import { createOfficialMcpClient } from './official-mcp-client.js'
+import { createCompositeService, type Identity } from './composite-service.js'
 
 export interface FeishuService {
   callTool(name: string, args: Record<string, unknown>): Promise<unknown>
@@ -11,11 +13,31 @@ export interface FeishuService {
   close(): Promise<void>
 }
 
-export async function initService(config: FeishuConfig, identity: 'user' | 'bot' = 'bot'): Promise<FeishuService> {
+export async function initService(config: FeishuConfig, identity: Identity = 'auto'): Promise<FeishuService> {
   const mode = getConfigMode(config)
 
   if (mode === 'direct') {
-    return createDirectService(config, identity)
+    const directIdentity = identity === 'auto' ? 'bot' : identity
+    const directSvc = createDirectService(config, directIdentity)
+
+    // Wrap with CompositeService when MCP endpoints are configured
+    if (config.mcp_endpoints?.length) {
+      const mcpClient = createOfficialMcpClient(config.mcp_endpoints)
+      return createCompositeService(directSvc, mcpClient, identity)
+    }
+
+    return directSvc
+  }
+
+  // MCP-only mode (no app_id, only mcp_endpoints)
+  if (config.mcp_endpoints?.length) {
+    const mcpClient = createOfficialMcpClient(config.mcp_endpoints)
+    return {
+      callTool: (name, args) => mcpClient.callTool(name, args),
+      uploadFile: () => { throw new Error('File upload not supported in MCP-only mode') },
+      listTools: () => mcpClient.listTools(),
+      close: () => mcpClient.close(),
+    }
   }
 
   if (!config.lark_mcp_url) {

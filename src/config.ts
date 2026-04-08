@@ -3,6 +3,11 @@ import path from 'node:path'
 import os from 'node:os'
 import { parse, stringify } from 'yaml'
 
+export interface McpEndpoint {
+  name: string
+  url: string
+}
+
 export interface FeishuConfig {
   lark_mcp_url?: string
   app_id?: string
@@ -11,6 +16,7 @@ export interface FeishuConfig {
   user_access_token?: string
   user_refresh_token?: string
   user_token_expires_at?: number
+  mcp_endpoints?: McpEndpoint[]
 }
 
 export type ConfigMode = 'proxy' | 'direct'
@@ -38,7 +44,14 @@ export function readConfig(configPath = DEFAULT_CONFIG_PATH): FeishuConfig | nul
     if (parsed.user_access_token) cfg.user_access_token = parsed.user_access_token
     if (parsed.user_refresh_token) cfg.user_refresh_token = parsed.user_refresh_token
     if (parsed.user_token_expires_at) cfg.user_token_expires_at = parsed.user_token_expires_at
+    if (Array.isArray((parsed as Record<string, unknown>).mcp_endpoints)) {
+      cfg.mcp_endpoints = (parsed as Record<string, unknown>).mcp_endpoints as McpEndpoint[]
+    }
     return cfg
+  }
+  // MCP-only mode (no app_id/app_secret, but has mcp_endpoints)
+  if (Array.isArray((parsed as Record<string, unknown>).mcp_endpoints)) {
+    return { mcp_endpoints: (parsed as Record<string, unknown>).mcp_endpoints as McpEndpoint[] }
   }
   return null
 }

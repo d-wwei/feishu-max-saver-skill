@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import { readConfig, writeConfig, getConfigMode } from '../config.js'
+import { readConfig, writeConfig, getConfigMode, type McpEndpoint } from '../config.js'
 import { outputSuccess, outputError } from '../output.js'
 
 export function registerConfigCommand(program: Command): void {
@@ -66,5 +66,68 @@ export function registerConfigCommand(program: Command): void {
           user_access_token: cfg.user_access_token ? '****' + cfg.user_access_token.slice(-4) : '(not set)',
         })
       }
+    })
+
+  config
+    .command('set-mcp')
+    .description('Add or update an official Feishu MCP endpoint')
+    .requiredOption('--name <name>', 'Endpoint name (e.g. contacts, im, calendar)')
+    .requiredOption('--url <url>', 'Feishu MCP URL')
+    .action((opts) => {
+      try {
+        const cfg = readConfig() ?? {}
+        const endpoints: McpEndpoint[] = cfg.mcp_endpoints ?? []
+        const idx = endpoints.findIndex(e => e.name === opts.name)
+        if (idx >= 0) {
+          endpoints[idx].url = opts.url
+        } else {
+          endpoints.push({ name: opts.name, url: opts.url })
+        }
+        cfg.mcp_endpoints = endpoints
+        writeConfig(cfg)
+        outputSuccess({ message: `MCP endpoint "${opts.name}" saved`, total: endpoints.length })
+      } catch (err) {
+        outputError(err instanceof Error ? err.message : String(err), 'CONFIG_WRITE_ERROR')
+        process.exit(1)
+      }
+    })
+
+  config
+    .command('remove-mcp')
+    .description('Remove an official Feishu MCP endpoint')
+    .requiredOption('--name <name>', 'Endpoint name to remove')
+    .action((opts) => {
+      try {
+        const cfg = readConfig()
+        if (!cfg?.mcp_endpoints?.length) {
+          outputError('No MCP endpoints configured', 'CONFIG_NOT_FOUND')
+          process.exit(1)
+        }
+        cfg.mcp_endpoints = cfg.mcp_endpoints.filter(e => e.name !== opts.name)
+        if (cfg.mcp_endpoints.length === 0) delete cfg.mcp_endpoints
+        writeConfig(cfg)
+        outputSuccess({ message: `MCP endpoint "${opts.name}" removed` })
+      } catch (err) {
+        outputError(err instanceof Error ? err.message : String(err), 'CONFIG_WRITE_ERROR')
+        process.exit(1)
+      }
+    })
+
+  config
+    .command('list-mcp')
+    .description('List configured official Feishu MCP endpoints')
+    .action(() => {
+      const cfg = readConfig()
+      const endpoints = cfg?.mcp_endpoints ?? []
+      if (endpoints.length === 0) {
+        outputSuccess({ message: 'No MCP endpoints configured', endpoints: [] })
+        return
+      }
+      outputSuccess({
+        endpoints: endpoints.map(e => ({
+          name: e.name,
+          url: e.url.slice(0, 50) + '...',
+        })),
+      })
     })
 }
