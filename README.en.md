@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">Feishu Max Saver Skill</h1>
-  <p align="center">146 Feishu APIs. 655 tokens of context. Works with any Agent.</p>
+  <p align="center">164 Feishu APIs. ~695 tokens of context. Works with any Agent.</p>
   <p align="center">
     <a href="#quick-start">Quick Start</a> · <a href="#why-not-the-official-options">Why Not Official</a> · <a href="./README.md">中文</a>
   </p>
@@ -12,7 +12,7 @@
 
 "Max Saver" is literal: **maximum context savings for AI Agents**.
 
-Connecting an AI Agent to Feishu/Lark typically costs 15,000+ tokens of context window — burned on loading tool definitions before any real work begins. This project brings that number down to **655 tokens**. Same 146 API endpoints, same 29 capability categories, **4% of the context cost**.
+Connecting an AI Agent to Feishu/Lark typically costs 15,000+ tokens of context window — burned on loading tool definitions before any real work begins. This project brings that number down to **~695 tokens**. 164 API endpoints, 29 capability categories, **5% of the context cost**.
 
 ```bash
 feishu doc search "Q2 report"                    # Search docs
@@ -28,23 +28,37 @@ All output is structured JSON. Agent-ready. Framework-agnostic — if your Agent
 
 ## Why Not the Official Options
 
-| Approach | Context Cost | Agent Compatibility | Loading |
-|----------|-------------|-------------------|---------|
-| Official Feishu MCP (1350+ tools) | ~15,000+ tokens | MCP clients only | Full load at startup |
-| Official Lark CLI (19 skill files) | ~15,000+ tokens | npx skills only | Full load at startup |
-| **This project** | **~655 tokens** | **Any Agent** | **On-demand** |
+| Approach | Context Cost | Agent Compatibility | Loading | Admin Approval |
+|----------|-------------|-------------------|---------|----------------|
+| Official Feishu MCP (1350+ tools) | ~15,000+ tokens | MCP clients only | Full load at startup | No (personal) |
+| Official Lark CLI (19 skill files) | ~15,000+ tokens | npx skills only | Full load at startup | No (personal) |
+| **This project** | **~695 tokens** | **Any Agent** | **On-demand** | **Optional (dual engine)** |
 
-### Three Cuts to 655 Tokens
+### Three Cuts to ~695 Tokens
 
 Three design decisions, stacked:
 
-**Cut 1: Two-tier loading.** SKILL.md (~655 tokens) contains only the capability overview and common command patterns — it stays resident. The full 100+ command reference (~3,600 tokens) lives in `references/commands.md` and loads only when the Agent needs specific parameters. Most tasks never hit the second tier.
+**Cut 1: Two-tier loading.** SKILL.md (~695 tokens) contains only the capability overview and common command patterns — it stays resident. The full 100+ command reference (~3,600 tokens) lives in `references/commands.md` and loads only when the Agent needs specific parameters. Most tasks never hit the second tier.
 
 **Cut 2: CLI, not MCP.** MCP requires injecting JSON schemas for every tool into context at connection time. 1,350 tools = 1,350 schemas. This project takes the CLI route — the Agent runs `feishu <command>` directly. No schemas to preload. Think of it this way: MCP carries a 1,350-piece toolbox out the door; CLI carries a pocket handbook.
 
 **Cut 3: Skill protocol, on-demand.** Skills load when "Feishu" appears in conversation and unload when done. MCP servers are persistent: loaded at startup regardless of whether this conversation needs Feishu at all. Your Agent has 20 tools but uses 2-3 per conversation — Skill mode doesn't occupy context for the other 17.
 
-Combined: 655 vs 15,000. 96% saved.
+Combined: ~695 vs 15,000. 95% saved.
+
+### Dual Engine: REST API + Official MCP
+
+This project doesn't compete with the official MCP — it **absorbs it as an internal backend**. The CLI acts as its own MCP client, processes the data, and returns clean JSON to the Agent:
+
+```
+Agent → feishu CLI → REST API (bot identity) first
+                   → Permission denied? → Auto-fallback to official MCP (personal identity)
+                   → Agent only sees clean JSON, unaware of which path was taken
+```
+
+- With app credentials → REST primary, MCP fallback (zero permission friction)
+- With personal MCP only → Works standalone (zero approval, zero app creation)
+- Neither configured → Guides user to setup
 
 ### What We Have That the Official CLI Doesn't
 
@@ -54,7 +68,7 @@ Approval workflows, OKR, attendance records, report rules, admin console (audit 
 
 **All 6 original gaps resolved:** ~~Full email system~~ — added (send/list/draft/folder). ~~Event WebSocket subscriptions~~ — added (`feishu event subscribe`). ~~Whiteboard rendering~~ — added (Mermaid workflow). ~~Interactive OAuth login~~ — added (`feishu auth login`). ~~Task subtasks and reminders~~ — added. ~~Document media insertion~~ — added (upload-image/upload-file).
 
-## 146 Endpoints, by Scenario
+## 164 Endpoints, by Scenario
 
 🔄 **Office Automation** — Search/write/create docs, insert images/files into docs, update bitable (batch ops/field/view management), create approvals, manage tasks/subtasks. Markdown auto-converts to Feishu Block format.
 
@@ -82,9 +96,15 @@ cd feishu-max-saver-skill
 npm install && npm run build && npm link
 ```
 
-Configure your Feishu app credentials (create an app on the [Feishu Open Platform](https://open.feishu.cn)):
+Configure your Feishu connection (pick one or both):
 
 ```bash
+# Option 1: Personal MCP (zero approval, generate URL at https://open.feishu.cn/page/mcp/)
+feishu config set-mcp --name contacts --url "YOUR_MCP_URL"
+feishu config set-mcp --name im --url "YOUR_MCP_URL"
+# ... add more as needed (see skill/references/setup.md)
+
+# Option 2: App Direct (create app at https://open.feishu.cn, requires admin approval)
 feishu config set --app-id <app_id> --app-secret <app_secret>
 ```
 
@@ -103,29 +123,42 @@ ln -sf "$(pwd)/skill" ~/.gemini/skills/feishu
 
 Once registered, mentioning "Feishu" or "Lark" in any AI session auto-triggers the skill. Works with any Agent that can run shell commands.
 
-## Dual Identity Mode
+## Three Identity Modes
 
-Default: bot identity. Add `--as user` to switch to user identity for personal calendars, tasks, email, and other user-scoped resources:
+| Mode | Command | Behavior |
+|------|---------|----------|
+| **auto** (default) | `feishu ...` | Bot REST first, auto-fallback to personal MCP on permission errors |
+| user | `feishu --as user ...` | User REST first, fallback to MCP |
+| bot | `feishu --as bot ...` | Bot REST only, no fallback |
 
 ```bash
-feishu auth login                                  # Browser OAuth (one-time setup)
-feishu calendar list-events <calId> --as user      # User identity
-feishu mail list-messages me --as user             # Check inbox
-feishu auth status                                 # Check token status
+feishu task list                                   # auto: bot 403 → auto MCP fallback
+feishu --as user calendar list-events <calId>      # User identity
+feishu --as bot im send oc_xxx --content "Notice"  # Force bot
 ```
-
-Token auto-refreshes via refresh_token when expired. No manual intervention needed. Built for Agent automation pipelines.
 
 ## Configuration
 
+Two modes, usable independently or together (recommended).
+
+### Personal MCP (zero approval, recommended first step)
+
+Generate URLs at [Feishu MCP Config Page](https://open.feishu.cn/page/mcp/), then:
+
 ```bash
-# Direct mode (recommended)
+feishu config set-mcp --name contacts --url "https://open.feishu.cn/mcp/stream/mcp_YOUR_URL"
+feishu config set-mcp --name im --url "https://open.feishu.cn/mcp/stream/mcp_YOUR_URL"
+# ... add docx / bitable_wiki / calendar / task as needed
+feishu config list-mcp                             # View configured endpoints
+```
+
+See `skill/references/setup.md` for detailed creation guide.
+
+### App Direct (requires admin approval, supports bot and file upload)
+
+```bash
 feishu config set --app-id <id> --app-secret <secret>
-
-# Proxy mode
-feishu config set --url <Feishu MCP endpoint URL>
-
-# View current config
+feishu auth login                                  # Optional: OAuth for user token
 feishu config show
 ```
 

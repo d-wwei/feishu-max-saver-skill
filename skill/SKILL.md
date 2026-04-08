@@ -1,12 +1,12 @@
 ---
 name: feishu-max-saver
 description: >
-  飞书全平台 AI Skill — 146 个 API，29 类能力，双身份模式（--as user/bot）。
+  飞书全平台 AI Skill — 164 个 API，29 类能力，三身份模式（--as auto/user/bot）。
   覆盖：文档读写搜索、Block、文件夹、Wiki、IM消息（发/回/转/撤/表情/置顶/合并转发/加急）、
   多维表格（CRUD/批量/字段/视图）、日历（事件/参会者/空闲忙碌/RSVP）、群聊管理、
   通讯录、任务、审批、电子表格、评论、搜索、妙记、视频会议、文档权限、邮箱、
   企业百科、OKR、汇报、租户、考勤、管理后台。
-  通过 feishu CLI 直连 REST API，任何能执行 shell 的 Agent 均可使用。
+  REST API + 官方 MCP 双引擎，权限不足时自动 fallback。任何能执行 shell 的 Agent 均可使用。
   Triggers: "飞书", "lark", "feishu", "文档", "消息", "IM", "多维表格",
   "bitable", "日历", "calendar", "群聊", "通讯录", "任务", "审批",
   "表格", "sheets", "评论", "搜索", "妙记", "视频会议", "权限",
@@ -42,6 +42,8 @@ feishu tool call <工具名> '<json>'    # 调用任意 API
 
 ## 备注
 
-- `--as user` 用户身份（需 user_access_token），默认 bot
+- `--as auto`（默认）REST bot 优先，权限不足自动 fallback 个人 MCP
+- `--as user` 用户身份（需 user_access_token 或个人 MCP）
+- `--as bot` 仅 REST bot 身份，不 fallback
 - Workflow 模板见 `references/workflows.md`（会议纪要/站会日报/图表插入文档）
 - 完整参数见 `references/commands.md`
